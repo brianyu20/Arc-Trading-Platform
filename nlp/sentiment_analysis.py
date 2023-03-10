@@ -1,10 +1,13 @@
+import asyncio
+import nltk
+from nltk.sentiment import SentimentIntensityAnalyzer
 
 class SentimentAnalysis():
     def __init__(self, config:dict):
         self.config = config
+        #nltk.download('vader_lexicon')
+        self.analyzer = SentimentIntensityAnalyzer()
 
-    def get_config(self):
-        return self.config
-
-SA = SentimentAnalysis({'a': 'b'})
-print(SA.get_config())
+    def _analyze(self, text:str):
+        scores = self.analyzer.polarity_scores(text)
+        return scores
