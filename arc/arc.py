@@ -7,9 +7,14 @@ class ARC():
     def testing(self):
         return self.SNT.get_config()
     
-    def get_article(self):
-        return self.NAPI.make_request()
+    ############ news_api functions ##############
+    def get_articles(self, n_articles):
+        return self.NAPI._make_request(n_articles=n_articles)
     
+    ############ sentiment analysis functions ##############
+    def analyze_article_contents(self, contents):
+        return self.SNT._analyze_article_contents(contents)
+
     def analyze(self, text):
         return self.SNT._analyze(text)
 

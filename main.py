@@ -11,11 +11,15 @@ def main():
     SNT = SentimentAnalysis(config)
     NAPI = NewsApi()
     arc = ARC(config, SNT, NAPI)
-    content = arc.get_article()
-    content.split('[')
-    content = content[:197]
-    print(content)
-    score = arc.analyze(content)
-    print(score)
+    contents = arc.get_articles(n_articles=100)
+    #print(contents)
+
+    scores = arc.analyze_article_contents(contents)
+    print(*scores, sep='\n')
+    #content.split()
+    #content = content[:197]
+    # print(content)
+    # score = arc.analyze(content)
+    # print(score)
 
 main()
