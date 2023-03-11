@@ -1,6 +1,7 @@
 from arc.arc import ARC
 from nlp.sentiment_analysis import SentimentAnalysis
 from napi.news_api import NewsApi
+import json
 
 def main():
     config = {
@@ -11,15 +12,13 @@ def main():
     SNT = SentimentAnalysis(config)
     NAPI = NewsApi()
     arc = ARC(config, SNT, NAPI)
-    contents = arc.get_articles(n_articles=100)
-    #print(contents)
+    arc.get_and_store_articles(2, 'economy', '2023-03-01', '2023-03-11')
+    article_store = arc.get_article_store()
 
-    scores = arc.analyze_article_contents(contents)
-    print(*scores, sep='\n')
-    #content.split()
-    #content = content[:197]
-    # print(content)
-    # score = arc.analyze(content)
-    # print(score)
+    arc.analyze_and_store_scores(article_store)
+    sentiment_store = arc.get_sentiment_store()
+
+    json_sentiment_store = json.dumps(sentiment_store, indent=2)
+    print(json_sentiment_store)
 
 main()
