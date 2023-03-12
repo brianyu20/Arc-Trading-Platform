@@ -27,7 +27,7 @@ class Graph():
             neu.append(self.add_scores(values, 'neu'))
             pos.append(self.add_scores(values, 'pos'))
             compound.append(self.add_scores(values, 'compound'))
-            
+        
         # Set up the x-axis and y-axis labels
         ax.set_ylabel("Sentiment Score")
         ax.set_xlabel("Date")
@@ -40,7 +40,7 @@ class Graph():
         
         # Add a legend and show the plot
         ax.legend()
-        #plt.show()
+        plt.show()
         plt.savefig('data.png')
     
     def add_scores(self, score_array:list, score_type:str):

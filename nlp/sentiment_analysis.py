@@ -2,6 +2,7 @@ import asyncio
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
 import logging
+import json
 
 log = logging.getLogger(__name__)
 
@@ -14,6 +15,7 @@ class SentimentAnalysis():
         self.sentiment_store = {} # key: date, value: array of sentiment scores from the date
     
     def get_sentiment_store(self):
+        json_sentiment_store = json.dumps(self.sentiment_store, indent=2)
         return self.sentiment_store
     
     def analyze_and_store_scores(self, article_store:dict):

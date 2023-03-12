@@ -3,11 +3,12 @@ import logging
 log = logging.getLogger(__name__)
 
 class ARC():
-    def __init__(self, config:dict, SNT, NAPI, G):
+    def __init__(self, config:dict, SNT, NAPI, G, RF):
         log.info("Running ARC")
         self.SNT = SNT
         self.NAPI = NAPI
         self.graph = G
+        self.RF = RF
 
     ############ Process functions ##############
     def generate_graph(self, n_articles, topic, start, end):
@@ -18,6 +19,18 @@ class ARC():
         sentiment_store = self.get_sentiment_store()
         
         self.show_graph(sentiment_store)
+    
+    def get_next_stock(self, n_articles, topic, start, end):
+        self.get_and_store_articles_free(n_articles, topic, start, end)
+        article_store = self.get_article_store()
+
+        self.analyze_and_store_scores(article_store)
+        sentiment_store = self.get_sentiment_store()
+
+        data = self.RF.construct_pd_data(sentiment_store)
+        next_value = self.RF.predict_next_stock_value(data)
+        print(next_value)
+
         
     ############ news_api functions ##############
     def get_articles(self, n_articles, topic, date):
