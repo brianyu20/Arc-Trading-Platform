@@ -1,9 +1,13 @@
 import asyncio
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
+import logging
+
+log = logging.getLogger(__name__)
 
 class SentimentAnalysis():
     def __init__(self, config:dict):
+        log.info("Running SentimentAnalysis")
         self.config = config
         #nltk.download('vader_lexicon')
         self.analyzer = SentimentIntensityAnalyzer()
@@ -14,9 +18,10 @@ class SentimentAnalysis():
     
     def analyze_and_store_scores(self, article_store:dict):
         for date in article_store:
+            log.info(f"Computing sentiment scores for articles published on {date}")
             content_array = article_store[date]
             self.sentiment_store[date] = self._analyze_article_contents(content_array)
-            #print(self.sentiment_store[date])
+        log.info("Completed sentiment score calculation and storage")
 
     def _analyze(self, text:str):
         score = self.analyzer.polarity_scores(text)

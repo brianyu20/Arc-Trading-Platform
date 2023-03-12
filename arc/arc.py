@@ -1,17 +1,35 @@
+import logging
+
+log = logging.getLogger(__name__)
 
 class ARC():
-    def __init__(self, config:dict, SNT, NAPI):
+    def __init__(self, config:dict, SNT, NAPI, G):
+        log.info("Running ARC")
         self.SNT = SNT
         self.NAPI = NAPI
-    
-    def testing(self):
-        return self.SNT.get_config()
-    
+        self.graph = G
+
+    ############ Process functions ##############
+    def generate_graph(self, n_articles, topic, start, end):
+        self.get_and_store_articles_free(n_articles, topic, start, end)
+        article_store = self.get_article_store()
+
+        self.analyze_and_store_scores(article_store)
+        sentiment_store = self.get_sentiment_store()
+        
+        self.show_graph(sentiment_store)
+        
     ############ news_api functions ##############
     def get_articles(self, n_articles, topic, date):
         return self.NAPI._make_request(n_articles=n_articles, topic=topic, date=date)
     
+    def get_and_store_articles_free(self, n_articles, topic, start, end):
+        return self.NAPI.store_articles_free(n_articles, topic, start, end)
+
     def get_and_store_articles(self, n_articles, topic, start, end):
+        '''
+        use for paid version of NewsAPI
+        '''
         self.NAPI.store_articles(n_articles, topic, start, end)
     
     def get_article_store(self):
@@ -20,7 +38,7 @@ class ARC():
     ############ sentiment analysis functions ##############
     def get_sentiment_store(self):
         return self.SNT.get_sentiment_store()
-        
+
     def analyze_and_store_scores(self, article_store:dict):
         return self.SNT.analyze_and_store_scores(article_store)
 
@@ -30,3 +48,6 @@ class ARC():
     def analyze(self, text):
         return self.SNT._analyze(text)
 
+    ############ sentiment analysis functions ##############
+    def show_graph(self, sentiment_store:dict):
+        return self.graph.graph_scores(sentiment_store)
