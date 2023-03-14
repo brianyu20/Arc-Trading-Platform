@@ -26,7 +26,7 @@ class RandomForest():
 
         return next_stock_value[0]
     
-    def construct_pd_data(self, sentiment_store):
+    def construct_pd_data(self, sentiment_store, stock_store):
         pos_array = []
         neg_array = []
         neu_array = []
@@ -55,35 +55,16 @@ class RandomForest():
         })
         
         return data
-
-    def get_stock_values(self):
-        stock_values = []
-        filename = '/Users/brianyu/LQ/ai/stocks.csv'
-        with open(filename, "r") as csvfile:
-            reader = csv.DictReader(csvfile)
-            first = True
-            for row in reader:
-                date = row["Date"]
-                if self.is_date_before(date, '2023-02-12'):
-                    continue
-                curr_date = '2023-02-12'
-                open_value = float(row["Open"])
-                close_value = float(row["Close"])
-                if date != curr_date:
-                    stock_values.append(open_value)
-                else:
-                    stock_values.append(close_value)
-                curr_date = self.increment_date(curr_date)
-
-    def increment_date(self, date_string):
-        date = datetime.strptime(date_string, '%Y-%m-%d')
-        incremented_date = date + timedelta(days=1)
-        return incremented_date.strftime('%Y-%m-%d')
     
-    def is_date_before(self, date1_str, date2_str):
-        # Convert the date strings to datetime objects
-        date1 = datetime.strptime(date1_str, '%Y-%m-%d')
-        date2 = datetime.strptime(date2_str, '%Y-%m-%d')
+    def get_stock_data(stock_data_dict):
+        opens = []
+        highs = []
+        lows = []
+        closes = []
+        for date in stock_data_dict:
+            opens.append(float(stock_data_dict[date]["1. open"]))
+            highs.append(float(stock_data_dict[date]["2. high"]))
+            lows.append(float(stock_data_dict[date]["3. low"]))
+            closes.append(float(stock_data_dict[date]["4. close"]))
+        return opens, highs, lows, closes
 
-        # Check if date1 is before date2
-        return date1 < date2

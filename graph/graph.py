@@ -8,7 +8,7 @@ class Graph():
         log.info("Running Graph")
         self.config = config
 
-    def graph_scores(self, sentiment_store:dict):
+    def graph_scores(self, sentiment_store:dict, topic:str):
         log.info("Graphing sentiment store")
         fig, ax = plt.subplots(figsize=(10, 6))
     
@@ -40,8 +40,8 @@ class Graph():
         
         # Add a legend and show the plot
         ax.legend()
-        plt.show()
-        plt.savefig('data.png')
+        #plt.show()
+        plt.savefig(f'{topic}.png')
     
     def add_scores(self, score_array:list, score_type:str):
         added_score = 0

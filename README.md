@@ -14,4 +14,8 @@ Receives information from arc about text and SA. Graphs information
 Receives predictive information from arc. Graphs predictive models 
 
 ## Ai/ML
-Receives information from head about text and SA. Applies predictive modeling 
+Receives information from arc about text and SA. Applies predictive modeling 
+
+for each day
+    'pos', 'neu', 'neg', 'compound' => price(open, close, etc.?)
+Is this data enough to predict the next day..? or the same day's
