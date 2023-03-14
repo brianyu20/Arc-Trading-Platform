@@ -7,6 +7,42 @@ class Graph():
     def __init__(self, config:dict):
         log.info("Running Graph")
         self.config = config
+    
+    def graph_scores_and_prediction(self, sentiment_store:dict, topic:str, prediction):
+        log.info("Graphing sentiment store")
+        fig, ax = plt.subplots(figsize=(10, 6))
+    
+        # Create lists to store the values for the plot
+        dates = []
+        neg = []
+        neu = []
+        pos = []
+        compound = []
+        
+        # Loop through the dictionary and append values to the lists
+        for date in sorted(sentiment_store.keys()):
+            values = sentiment_store[date]
+            dates.append(date)
+            neg.append(self.add_scores(values, 'neg'))
+            neu.append(self.add_scores(values, 'neu'))
+            pos.append(self.add_scores(values, 'pos'))
+            compound.append(self.add_scores(values, 'compound'))
+        
+        # Set up the x-axis and y-axis labels
+        ax.set_ylabel("Sentiment Score")
+        ax.set_xlabel("Date")
+
+        # Create a line plot for each sentiment score
+        ax.plot(dates, neg, color="red", label="Negative")
+        ax.plot(dates, neu, color="grey", label="Neutral")
+        ax.plot(dates, pos, color="green", label="Positive")
+        ax.plot(dates, compound, color="blue", label="Compound")
+        
+        # Add a legend and show the plot
+        ax.legend()
+        ax.set_title(' '.join(str(p) for p in prediction), loc='center', fontsize=16)
+        #plt.show()
+        plt.savefig(f'{topic}.png')
 
     def graph_scores(self, sentiment_store:dict, topic:str):
         log.info("Graphing sentiment store")

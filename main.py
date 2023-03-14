@@ -25,15 +25,15 @@ async def main():
 
     arc = ARC(config, SNT, NAPI, G, RF, SAPI)
     #await arc.generate_graph(30, 'SVB', '2023-02-13', '2023-03-12')
-    #await arc.generate_next_stock(30, 'Microsoft', '2023-02-12', '2023-03-11')
+    await arc.generate_next_stock(-1, 'Tesla', 'TSLA', '2023-02-13', '2023-03-13')
 
-    await arc.get_and_store_articles(30, 'Microsoft', '2023-02-13', '2023-03-12')
-    article_store = await arc.get_article_store()
-    await arc.analyze_and_store_scores(article_store)
-    sentiment_store = await arc.get_sentiment_store()
-    await arc.get_and_store_stock('MSFT', '2023-02-13', '2023-03-12')
-    stock_store = await arc.get_stock_store()
-    await arc.sync_sentiment_stock(sentiment_store, stock_store, '2023-02-13', '2023-03-12')
+    # await arc.get_and_store_articles(30, 'Microsoft', '2023-02-13', '2023-03-12')
+    # article_store = await arc.get_article_store()
+    # await arc.analyze_and_store_scores(article_store)
+    # sentiment_store = await arc.get_sentiment_store()
+    # await arc.get_and_store_stock('MSFT', '2023-02-13', '2023-03-12')
+    # stock_store = await arc.get_stock_store()
+    # await arc.sync_sentiment_stock(sentiment_store, stock_store, '2023-02-13', '2023-03-12')
 
 
 

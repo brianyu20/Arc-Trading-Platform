@@ -23,16 +23,22 @@ class ARC():
         
         await self.show_graph(sentiment_store, topic)
     
-    async def generate_next_stock(self, n_articles, topic, start, end):
+    async def generate_next_stock(self, n_articles, topic, company_symbol, start, end):
         await self.get_and_store_articles_free(n_articles, topic, start, end)
         article_store = await self.get_article_store()
 
         await self.analyze_and_store_scores(article_store)
         sentiment_store = await self.get_sentiment_store()
 
-        data = self.RF.construct_pd_data(sentiment_store)
+        await self.get_and_store_stock(company_symbol, start, end)
+        stock_store = await self.get_stock_store()
+
+        sentiment_store, stock_store = await self.sync_sentiment_stock(sentiment_store, stock_store, start, end)
+
+        data = self.RF.construct_pd_data(sentiment_store, stock_store)
         next_value = self.RF.predict_next_stock_value(data)
-        print(next_value)
+        print(f"Prediction for {topic}, from learning {start} to {end}. Open, High, Low, Close. ",next_value)
+        await self.show_sentiment_stock_graph(sentiment_store, topic, next_value)
 
     ############ arc functions ##############
     async def sync_sentiment_stock(self, sentiment_store:dict, stock_store:dict, start:str, end:str):
@@ -56,8 +62,6 @@ class ARC():
         log.info(f" length of sentiment score: {len(sentiment_store)}")
         log.info(f" length of stock store: {len(stock_store)}")
         return sentiment_store, stock_store
-
-
 
     ############ news_api functions ##############
     async def get_articles(self, n_articles, topic, date):
@@ -91,6 +95,9 @@ class ARC():
     ############ graphing functions ##############
     async def show_graph(self, sentiment_store:dict, topic):
         return self.graph.graph_scores(sentiment_store, topic)
+    
+    async def show_sentiment_stock_graph(self, sentiment_store:dict, topic, prediction):
+        return self.graph.graph_scores_and_prediction(sentiment_store, topic, prediction)
     
     ############ stock_api functions ##############
     async def get_stock_store(self):
