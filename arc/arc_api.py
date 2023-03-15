@@ -33,9 +33,12 @@ class ARC():
         await self.get_and_store_stock(company_symbol, start, end)
         stock_store = await self.get_stock_store()
 
+        await self.get_and_store_interest(start, end)
+        interest_store = await self.get_interest_store()
+
         sentiment_store, stock_store = await self.sync_sentiment_stock(sentiment_store, stock_store, start, end)
 
-        data = self.RF.construct_pd_data(sentiment_store, stock_store)
+        data = self.RF.construct_pd_data(sentiment_store, stock_store, interest_store)
         next_value = self.RF.predict_next_stock_value(data)
         print(f"Prediction for {topic}, from learning {start} to {end}. Open, High, Low, Close. ",next_value)
         await self.show_sentiment_stock_graph(sentiment_store, topic, next_value)
@@ -105,6 +108,12 @@ class ARC():
     
     async def get_and_store_stock(self, company_symbol:str, start:str, end:str):
         return self.SAPI.get_and_store_stock(company_symbol, start, end)
+    
+    async def get_interest_store(self):
+        return self.SAPI.get_interest_store()
+
+    async def get_and_store_interest(self, start:str, end:str):
+        return self.SAPI.get_and_store_interest(start, end)
     
     ############ helper functions ##############
     def increment_date(self, date_string):
