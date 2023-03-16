@@ -15,7 +15,7 @@ class SentimentAnalysis():
         self.sentiment_store = {} # key: date, value: array of sentiment scores from the date
     
     def get_sentiment_store(self):
-        json_sentiment_store = json.dumps(self.sentiment_store, indent=2)
+        #json_sentiment_store = json.dumps(self.sentiment_store, indent=2)
         return self.sentiment_store
     
     def analyze_and_store_scores(self, article_store:dict):
@@ -37,3 +37,7 @@ class SentimentAnalysis():
             score = self._analyze(content)
             scores.append(score)
         return scores
+
+# sa = SentimentAnalysis({'key' : 'value'})
+# score = sa._analyze("Credit Suisses ability to shoot itself in the foot is legendary but you would have thought its shareholders would have learned not to make matters worse. But no, the chairman of Saudi National Bank")
+# print(score)

@@ -21,6 +21,7 @@ class NewsApi():
     
     def store_articles_free(self, n_articles:int, topic:str, start:str, end:str):
         url = (f'https://newsapi.org/v2/everything?q={topic}&from={start}&to={end}&sortBy=popularity&apiKey={self.apiKey}')
+        print(url)
         log.info(f"Making get request to {url}")
         response = requests.get(url)
         if response.json()['status'] == 'error':
