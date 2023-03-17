@@ -14,6 +14,7 @@ class StockApi():
         self.cpi_store = {}
         self.inflation_store = {}
         self.unemployment_store = {}
+        self.company_store = {}
 
     ''' stock functions '''
     def get_stock_store(self):
@@ -23,6 +24,7 @@ class StockApi():
         content = self.make_request(company_symbol)
         for date in content:
             if self.is_date_before(start, date) and self.is_date_before(date, end):
+                log.info(f"successfully fetched {date}. storing in stock_store: {content[date]}")
                 self.stock_store[date] = content[date]
 
     def make_request(self, company_symbol:str):
@@ -85,13 +87,6 @@ class StockApi():
         response = requests.get(url)
         content = response.json()['data']
         return content
-    
-    ''' inflation functions '''
-    def get_inflation_store(self):
-        return self.inflation_store
-
-    def make_inflation_request(self):
-        pass
 
     ''' unemployment functions '''
     def get_unemployment_store(self):
@@ -105,6 +100,17 @@ class StockApi():
         date2 = datetime.strptime(date2_str, '%Y-%m-%d')
 
         return date1 <= date2
+    
+    ''' company information functions'''
+    #TODO: gets published every year in June
+    def get_company_store(self):
+        return self.company_store
+    
+    def make_company_request(self, symbol:str):
+        log.info("Fetching Company information...")
+        url = f"https://www.alphavantage.co/query?function=INCOME_STATEMENT&symbol={symbol}&apikey={self.api_key}"
+        response = requests.get(url)
+        content = response.json()["annualReports"]
 
     def first_day_of_month(self, date_string):
         # Parse the input date string to a datetime object

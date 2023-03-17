@@ -24,8 +24,8 @@ async def main():
     SAPI = StockApi(config)
 
     arc = ARC(config, SNT, NAPI, G, RF, SAPI)
-    await arc.generate_graph(-1, 'Sporting Lisbon', '2023-02-16', '2023-03-15')
-    #await arc.generate_next_stock(-1, 'Credit Suisse', 'CS', '2023-02-16', '2023-03-15')
+    #await arc.generate_graph(-1, 'Credit Suisse', '2023-02-16', '2023-03-15')
+    await arc.generate_next_stock(-1, 'Credit Suisse', 'CS', '2023-02-17', '2023-03-16')
 
     # await arc.get_and_store_articles(30, 'Microsoft', '2023-02-13', '2023-03-12')
     # article_store = await arc.get_article_store()

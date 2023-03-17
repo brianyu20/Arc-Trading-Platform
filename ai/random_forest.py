@@ -88,6 +88,9 @@ class RandomForest():
         closes = []
         volumes = []
         for date in stock_store:
+            open = float(stock_store[date]["1. open"])
+            close = float(stock_store[date]["4. close"])
+            log.info(f"Extracted {date}: open: {open}, close:{close}")
             opens.append(float(stock_store[date]["1. open"]))
             highs.append(float(stock_store[date]["2. high"]))
             lows.append(float(stock_store[date]["3. low"]))
