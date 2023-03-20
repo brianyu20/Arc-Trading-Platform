@@ -22,7 +22,8 @@ class Graph():
         # Loop through the dictionary and append values to the lists
         for date in sorted(sentiment_store.keys()):
             values = sentiment_store[date]
-            dates.append(date)
+            print(date[4:])
+            dates.append(date[5:])
             neg.append(self.add_scores(values, 'neg'))
             neu.append(self.add_scores(values, 'neu'))
             pos.append(self.add_scores(values, 'pos'))

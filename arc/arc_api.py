@@ -1,7 +1,7 @@
 import logging
 import asyncio
 from datetime import datetime, timedelta
-
+from sapi import stock_api
 log = logging.getLogger(__name__)
 
 class ARC():
@@ -11,7 +11,7 @@ class ARC():
         self.NAPI = NAPI
         self.graph = G
         self.RF = RF
-        self.SAPI = SAPI
+        self.SAPI: stock_api = SAPI
 
     ############ Process functions ##############
     async def generate_graph(self, n_articles, topic, start, end):
@@ -142,4 +142,6 @@ class ARC():
         date = datetime.strptime(date_string, '%Y-%m-%d')
         day_before = date + timedelta(days=-1)
         return day_before.strftime('%Y-%m-%d')
+
+
 

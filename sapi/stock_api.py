@@ -24,7 +24,7 @@ class StockApi():
         content = self.make_request(company_symbol)
         for date in content:
             if self.is_date_before(start, date) and self.is_date_before(date, end):
-                log.info(f"successfully fetched {date}. storing in stock_store: {content[date]}")
+                # log.info(f"successfully fetched {date}. storing in stock_store: {content[date]}")
                 self.stock_store[date] = content[date]
 
     def make_request(self, company_symbol:str):
