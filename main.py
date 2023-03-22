@@ -4,6 +4,7 @@ from napi.news_api import NewsApi
 from graph.graph import Graph
 from ai.random_forest import RandomForest
 from sapi.stock_api import StockApi
+from trading.simulate import TradeSimulator
 import json
 import logging
 import asyncio
@@ -22,12 +23,14 @@ async def main():
     G = Graph(config)
     RF = RandomForest(config)
     SAPI = StockApi(config)
+    SIMULATOR = TradeSimulator(config)
 
-    arc = ARC(config, SNT, NAPI, G, RF, SAPI)
+    arc = ARC(config, SNT, NAPI, G, RF, SAPI, SIMULATOR)
     #await arc.generate_graph(-1, 'Credit Suisse', '2023-02-16', '2023-03-15')
-    await arc.generate_next_stock(-1, 'Tesla', 'TSLA', '2023-02-21', '2023-03-20')
+    #await arc.generate_next_stock(-1, 'S&P500', 'SPY', '2023-02-21', '2023-03-20')
+    await arc.generate_order(-1, 'UBS', 'UBS', '2023-02-21', '2023-03-20')
 
-    # await arc.get_and_store_articles(30, 'Microsoft', '2023-02-13', '2023-03-12')
+    # await arc.get_and_store_articles(30, 'Micsrosoft', '2023-02-13', '2023-03-12')
     # article_store = await arc.get_article_store()
     # await arc.analyze_and_store_scores(article_store)
     # sentiment_store = await arc.get_sentiment_store()

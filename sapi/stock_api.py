@@ -19,6 +19,16 @@ class StockApi():
     ''' stock functions '''
     def get_stock_store(self):
         return self.stock_store
+    
+    def get_last_stock(self):
+        for date in self.stock_store:
+            open = self.stock_store[date]['1. open']
+            high = self.stock_store[date]['2. high']
+            low = self.stock_store[date]['3. low']
+            close = self.stock_store[date]['4. close']
+            last_stock_array = [open, high, low, close]
+            break
+        return last_stock_array
 
     def get_and_store_stock(self, company_symbol:str, start:str, end:str):
         content = self.make_request(company_symbol)
@@ -28,8 +38,9 @@ class StockApi():
                 self.stock_store[date] = content[date]
 
     def make_request(self, company_symbol:str):
-        log.info("Fetching stock information...")
         url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={company_symbol}&apikey={self.api_key}&outputsize=compact"
+        log.info("Fetching stock information...")
+        log.info(url)
         response = requests.get(url)
         content = response.json()["Time Series (Daily)"]
         return content
@@ -57,6 +68,7 @@ class StockApi():
     def make_interest_request(self) -> list:
         log.info("Fetching interests information...")
         url = f"https://www.alphavantage.co/query?function=FEDERAL_FUNDS_RATE&interval=monthly&apikey={self.api_key}"
+        log.info(url)
         response = requests.get(url)
         content = response.json()['data']
         return content
@@ -84,6 +96,7 @@ class StockApi():
     def make_cpi_request(self):
         log.info("Fetching CPI information...")
         url = f"https://www.alphavantage.co/query?function=CPI&interval=monthly&apikey={self.api_key}"
+        log.info(url)
         response = requests.get(url)
         content = response.json()['data']
         return content

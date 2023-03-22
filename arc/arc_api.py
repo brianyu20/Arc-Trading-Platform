@@ -2,16 +2,23 @@ import logging
 import asyncio
 from datetime import datetime, timedelta
 from sapi import stock_api
+from napi import news_api
+from graph import graph
+from nlp import sentiment_analysis
+from trading import simulate
+from ai import random_forest
+
 log = logging.getLogger(__name__)
 
 class ARC():
-    def __init__(self, config:dict, SNT, NAPI, G, RF, SAPI):
+    def __init__(self, config:dict, SNT:sentiment_analysis, NAPI, G, RF, SAPI, SIMULATOR):
         log.info("Running ARC")
-        self.SNT = SNT
-        self.NAPI = NAPI
-        self.graph = G
-        self.RF = RF
+        self.SNT:sentiment_analysis = SNT
+        self.NAPI:news_api = NAPI
+        self.graph:graph = G
+        self.RF:random_forest = RF
         self.SAPI: stock_api = SAPI
+        self.simulator:simulate = SIMULATOR
 
     ############ Process functions ##############
     async def generate_graph(self, n_articles, topic, start, end):
@@ -45,6 +52,11 @@ class ARC():
         next_value = self.RF.predict_next_stock_value(data)
         print(f"Prediction for {topic}, from learning {start} to {end}. Open, High, Low, Close. ",next_value)
         await self.show_sentiment_stock_graph(sentiment_store, topic, next_value)
+        return next_value, await self.get_last_stock()
+    
+    async def generate_order(self, n_articles, topic, company_symbol, start, end):
+        predicted_value, previous_value = await self.generate_next_stock(n_articles, topic, company_symbol, start, end)
+        self.simulator.create_order(predicted_value, previous_value, company_symbol)
 
     ############ arc functions ##############
     async def sync_sentiment_stock(self, sentiment_store:dict, stock_store:dict, start:str, end:str):
@@ -108,6 +120,9 @@ class ARC():
     ############ stock_api functions ##############
     async def get_stock_store(self):
         return self.SAPI.get_stock_store()
+    
+    async def get_last_stock(self):
+        return self.SAPI.get_last_stock()
     
     async def get_and_store_stock(self, company_symbol:str, start:str, end:str):
         return self.SAPI.get_and_store_stock(company_symbol, start, end)
