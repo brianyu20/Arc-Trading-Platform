@@ -48,15 +48,15 @@ class ARC():
 
         sentiment_store, stock_store = await self.sync_sentiment_stock(sentiment_store, stock_store, start, end)
 
-        data = self.RF.construct_pd_data(sentiment_store, stock_store, interest_store, cpi_store)
-        next_value = self.RF.predict_next_stock_value(data)
+        data = await self.RF.construct_pd_data(sentiment_store, stock_store, interest_store, cpi_store)
+        next_value = await self.RF.predict_next_stock_value(data)
         print(f"Prediction for {topic}, from learning {start} to {end}. Open, High, Low, Close. ",next_value)
         await self.show_sentiment_stock_graph(sentiment_store, topic, next_value)
         return next_value, await self.get_last_stock()
     
     async def generate_order(self, n_articles, topic, company_symbol, start, end):
         predicted_value, previous_value = await self.generate_next_stock(n_articles, topic, company_symbol, start, end)
-        self.simulator.create_order(predicted_value, previous_value, company_symbol)
+        await self.simulator.create_order(predicted_value, previous_value, company_symbol)
 
     ############ arc functions ##############
     async def sync_sentiment_stock(self, sentiment_store:dict, stock_store:dict, start:str, end:str):
@@ -83,61 +83,61 @@ class ARC():
 
     ############ news_api functions ##############
     async def get_articles(self, n_articles, topic, date):
-        return self.NAPI._make_request(n_articles=n_articles, topic=topic, date=date)
+        return await self.NAPI._make_request(n_articles=n_articles, topic=topic, date=date)
     
     async def get_and_store_articles_free(self, n_articles, topic, start, end):
-        return self.NAPI.store_articles_free(n_articles, topic, start, end)
+        return await self.NAPI.store_articles_free(n_articles, topic, start, end)
 
     async def get_and_store_articles(self, n_articles, topic, start, end):
         '''
         use for paid version of NewsAPI
         '''
-        self.NAPI.store_articles(n_articles, topic, start, end)
+        await self.NAPI.store_articles(n_articles, topic, start, end)
     
     async def get_article_store(self):
-        return self.NAPI.get_article_store()
+        return await self.NAPI.get_article_store()
     
     ############ sentiment analysis functions ##############
     async def get_sentiment_store(self):
-        return self.SNT.get_sentiment_store()
+        return await self.SNT.get_sentiment_store()
 
     async def analyze_and_store_scores(self, article_store:dict):
-        return self.SNT.analyze_and_store_scores(article_store)
+        return await self.SNT.analyze_and_store_scores(article_store)
 
     async def analyze_article_contents(self, contents):
-        return self.SNT._analyze_article_contents(contents)
+        return await self.SNT._analyze_article_contents(contents)
 
     async def analyze(self, text):
-        return self.SNT._analyze(text)
+        return await self.SNT._analyze(text)
 
     ############ graphing functions ##############
     async def show_graph(self, sentiment_store:dict, topic):
-        return self.graph.graph_scores(sentiment_store, topic)
+        return await self.graph.graph_scores(sentiment_store, topic)
     
     async def show_sentiment_stock_graph(self, sentiment_store:dict, topic, prediction):
-        return self.graph.graph_scores_and_prediction(sentiment_store, topic, prediction)
+        return await self.graph.graph_scores_and_prediction(sentiment_store, topic, prediction)
     
     ############ stock_api functions ##############
     async def get_stock_store(self):
-        return self.SAPI.get_stock_store()
+        return await self.SAPI.get_stock_store()
     
     async def get_last_stock(self):
-        return self.SAPI.get_last_stock()
+        return await self.SAPI.get_last_stock()
     
     async def get_and_store_stock(self, company_symbol:str, start:str, end:str):
-        return self.SAPI.get_and_store_stock(company_symbol, start, end)
+        return await self.SAPI.get_and_store_stock(company_symbol, start, end)
     
     async def get_interest_store(self):
-        return self.SAPI.get_interest_store()
+        return await self.SAPI.get_interest_store()
 
     async def get_and_store_interest(self, start:str, end:str):
-        return self.SAPI.get_and_store_interest(start, end)
+        return await self.SAPI.get_and_store_interest(start, end)
 
     async def get_cpi_store(self):
-        return self.SAPI.get_cpi_store()
+        return await self.SAPI.get_cpi_store()
     
     async def get_and_store_cpi(self, start:str, end:str):
-        return self.SAPI.get_and_store_cpi(start, end)
+        return await self.SAPI.get_and_store_cpi(start, end)
     
     ############ helper functions ##############
     def increment_date(self, date_string):
