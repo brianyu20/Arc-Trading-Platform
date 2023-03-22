@@ -10,8 +10,8 @@ log = logging.getLogger(__name__)
 class TradeSimulator():
     def __init__(self, config):
         self.config = config
-        self.api_key = "PK8CK62WMLHN4NCFLRJD"
-        self.api_secret = "B3KOqhhX0d2b0W5RzqqxjSjHCSBoQMKLXZoCf21i"
+        self.api_key = "PKWS1SIML3R0BIRXXAY9"
+        self.api_secret = "6Vd4GciP7HHb6ll7Teej74IuXuaLCBt3oV5iteia"
         self.base_url = 'https://paper-api.alpaca.markets'
         #self.api = tradeapi.REST(self.api_key, self.api_secret, self.base_url, api_version='v2')
         self.client = TradingClient(self.api_key, self.api_secret, paper=True)
@@ -21,7 +21,7 @@ class TradeSimulator():
         print(account)
     
     async def create_order(self, prediction, last_stock, symbol):
-        log.info("Creating order")
+        log.info("Checking conditions for order for %s", symbol)
         log.info("last stock information %s, %s, %s, %s", last_stock[0], last_stock[1], last_stock[1], last_stock[1])
         pred_open = float(prediction[0])
         pred_high = float(prediction[1])

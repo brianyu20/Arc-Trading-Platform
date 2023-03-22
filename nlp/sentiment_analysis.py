@@ -23,7 +23,8 @@ class SentimentAnalysis():
         for date in article_store:
             log.info(f"Computing sentiment scores for articles published on {date}")
             content_array = article_store[date]
-            self.sentiment_store[date] = await self._analyze_article_contents(content_array)
+            analyzed = await self._analyze_article_contents(content_array)
+            self.sentiment_store[date] = analyzed
         log.info("Completed sentiment score calculation and storage")
 
     async def _analyze(self, text:str):

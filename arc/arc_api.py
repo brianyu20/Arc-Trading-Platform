@@ -20,6 +20,58 @@ class ARC():
         self.SAPI: stock_api = SAPI
         self.simulator:simulate = SIMULATOR
 
+        self.sp500 = {
+            # '3M': 'MMM',
+            # 'Adobe': 'ADBE',
+            # 'Advanced Micro Devices': 'AMD',
+            # 'Amazon': 'AMZN',
+            # 'American Express': 'AXP',
+            # 'Apple': 'AAPL',
+            # 'Boeing': 'BA',
+            # 'Caterpillar': 'CAT',
+            # 'Cisco': 'CSCO',
+            # 'Citigroup': 'C',
+            # 'Coca-Cola': 'KO',
+            # 'Disney': 'DIS',
+            # 'DuPont': 'DD',
+            # 'Exxon Mobil': 'XOM',
+            # 'Meta': 'META',
+            # 'General Electric': 'GE',
+            # 'Goldman Sachs': 'GS',
+            # 'Home Depot': 'HD',
+            # 'IBM': 'IBM',
+            # 'Intel': 'INTC',
+            # 'Johnson & Johnson': 'JNJ',
+            # 'JPMorgan Chase': 'JPM',
+            # 'McDonalds': 'MCD',
+            # 'Merck': 'MRK',
+            # 'Microsoft': 'MSFT',
+            # 'Netflix': 'NFLX',
+            # 'Nike': 'NKE',
+            # 'Oracle': 'ORCL',
+            # 'PepsiCo': 'PEP',
+            # 'Pfizer': 'PFE',
+            # 'Procter & Gamble': 'PG',
+            # 'Qualcomm': 'QCOM',
+            # 'Salesforce': 'CRM',
+            # 'Tesla': 'TSLA',
+            # 'Texas Instruments': 'TXN',
+            # 'The Coca-Cola Company': 'KO',
+            # 'The Home Depot': 'HD',
+            'The Procter & Gamble Company': 'PG',
+            'The Walt Disney Company': 'DIS',
+            'Travelers': 'TRV',
+            'UnitedHealth Group': 'UNH',
+            'Verizon': 'VZ',
+            'Visa': 'V',
+            'Walmart': 'WMT',
+            'Walt Disney': 'DIS',
+            'Wells Fargo': 'WFC',
+            'ExxonMobil': 'XOM',
+            'Johnson & Johnson': 'JNJ',
+            'Bristol-Myers Squibb': 'BMY'
+        }
+
     ############ Process functions ##############
     async def generate_graph(self, n_articles, topic, start, end):
         await self.get_and_store_articles_free(n_articles, topic, start, end)
@@ -30,7 +82,7 @@ class ARC():
         
         await self.show_graph(sentiment_store, topic)
     
-    async def generate_next_stock(self, n_articles, topic, company_symbol, start, end):
+    async def generate_next_stock(self, n_articles, topic, company_symbol, start, end, first_iteration:bool):
         await self.get_and_store_articles_free(n_articles, topic, start, end)
         article_store = await self.get_article_store()
 
@@ -40,10 +92,12 @@ class ARC():
         await self.get_and_store_stock(company_symbol, start, end)
         stock_store = await self.get_stock_store()
 
-        await self.get_and_store_interest(start, end)
+        if first_iteration:
+            await self.get_and_store_interest(start, end)
         interest_store = await self.get_interest_store()
 
-        await self.get_and_store_cpi(start, end)
+        if first_iteration:
+            await self.get_and_store_cpi(start, end)
         cpi_store = await self.get_cpi_store()
 
         sentiment_store, stock_store = await self.sync_sentiment_stock(sentiment_store, stock_store, start, end)
@@ -54,9 +108,17 @@ class ARC():
         await self.show_sentiment_stock_graph(sentiment_store, topic, next_value)
         return next_value, await self.get_last_stock()
     
-    async def generate_order(self, n_articles, topic, company_symbol, start, end):
-        predicted_value, previous_value = await self.generate_next_stock(n_articles, topic, company_symbol, start, end)
+    async def generate_order(self, n_articles, topic, company_symbol, start, end, first_iteration:bool):
+        predicted_value, previous_value = await self.generate_next_stock(n_articles, topic, company_symbol, start, end, first_iteration)
         await self.simulator.create_order(predicted_value, previous_value, company_symbol)
+    
+    async def generate_multiple_orders(self, n_articles, start, end):
+        first_iteration = True
+        for company_name in self.sp500:
+            await self.generate_order(n_articles, company_name, self.sp500[company_name], start, end, first_iteration)
+            first_iteration = False
+            await asyncio.sleep(15)
+
 
     ############ arc functions ##############
     async def sync_sentiment_stock(self, sentiment_store:dict, stock_store:dict, start:str, end:str):
