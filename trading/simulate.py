@@ -3,6 +3,7 @@ from alpaca.trading.client import TradingClient
 from alpaca.trading.requests import MarketOrderRequest
 from alpaca.trading.enums import OrderSide, TimeInForce
 import logging
+import asyncio
 
 log = logging.getLogger(__name__)
 
@@ -19,7 +20,7 @@ class TradeSimulator():
         account = self.api.get_account()
         print(account)
     
-    def create_order(self, prediction, last_stock, symbol):
+    async def create_order(self, prediction, last_stock, symbol):
         log.info("Creating order")
         log.info("last stock information %s, %s, %s, %s", last_stock[0], last_stock[1], last_stock[1], last_stock[1])
         pred_open = float(prediction[0])

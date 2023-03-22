@@ -3,6 +3,7 @@ from sklearn.ensemble import RandomForestRegressor
 import numpy as np
 import json
 import logging
+import asyncio
 
 log = logging.getLogger(__name__)
 
@@ -10,7 +11,7 @@ class RandomForest():
     def __init__(self, config:dict):
         self.config = config
     
-    def predict_next_stock_value(self, data):
+    async def predict_next_stock_value(self, data):
         log.info("Running model")
         # Split the data into features (X) and labels (y)
         X_sentiment = data[['pos', 'neg', 'neu', 'compound']]
@@ -29,7 +30,7 @@ class RandomForest():
 
         return next_stock_values[0]
     
-    def construct_pd_data(self, sentiment_store, stock_store, interest_store, cpi_store):
+    async def construct_pd_data(self, sentiment_store, stock_store, interest_store, cpi_store):
         log.info("Parsing stores to build arrays...")
         pos_array = []
         neg_array = []

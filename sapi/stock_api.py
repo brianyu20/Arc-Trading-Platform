@@ -2,6 +2,7 @@ import requests
 import json
 import logging
 from datetime import datetime, timedelta
+import aiohttp
 
 log = logging.getLogger(__name__)
 
@@ -17,10 +18,10 @@ class StockApi():
         self.company_store = {}
 
     ''' stock functions '''
-    def get_stock_store(self):
+    async def get_stock_store(self):
         return self.stock_store
     
-    def get_last_stock(self):
+    async def get_last_stock(self):
         for date in self.stock_store:
             open = self.stock_store[date]['1. open']
             high = self.stock_store[date]['2. high']
@@ -30,27 +31,28 @@ class StockApi():
             break
         return last_stock_array
 
-    def get_and_store_stock(self, company_symbol:str, start:str, end:str):
-        content = self.make_request(company_symbol)
+    async def get_and_store_stock(self, company_symbol:str, start:str, end:str):
+        content = await self.make_request(company_symbol)
         for date in content:
             if self.is_date_before(start, date) and self.is_date_before(date, end):
                 # log.info(f"successfully fetched {date}. storing in stock_store: {content[date]}")
                 self.stock_store[date] = content[date]
 
-    def make_request(self, company_symbol:str):
+    async def make_request(self, company_symbol: str):
         url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol={company_symbol}&apikey={self.api_key}&outputsize=compact"
         log.info("Fetching stock information...")
         log.info(url)
-        response = requests.get(url)
-        content = response.json()["Time Series (Daily)"]
-        return content
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                content = await response.json()
+                return content["Time Series (Daily)"]
     
     ''' interest functions '''
-    def get_interest_store(self):
+    async def get_interest_store(self):
         return self.interest_store
     
-    def get_and_store_interest(self, start:str, end:str):
-        content = self.make_interest_request()
+    async def get_and_store_interest(self, start:str, end:str):
+        content = await self.make_interest_request()
         date_value_dict = {}
         for i in range(len(content)):
             date_value_dict[content[i]['date']] = content[i]['value']
@@ -65,20 +67,21 @@ class StockApi():
                 self.interest_store[curr_date] = date_value_dict[first_day_of_month]
             curr_date = self.increment_date(curr_date)
 
-    def make_interest_request(self) -> list:
+    async def make_interest_request(self) -> list:
         log.info("Fetching interests information...")
         url = f"https://www.alphavantage.co/query?function=FEDERAL_FUNDS_RATE&interval=monthly&apikey={self.api_key}"
         log.info(url)
-        response = requests.get(url)
-        content = response.json()['data']
-        return content
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                content = await response.json()
+                return content['data']
     
     ''' cpi functions '''
-    def get_cpi_store(self):
+    async def get_cpi_store(self):
         return self.cpi_store
     
-    def get_and_store_cpi(self, start:str, end:str):
-        content = self.make_cpi_request()
+    async def get_and_store_cpi(self, start:str, end:str):
+        content = await self.make_cpi_request()
         date_value_dict = {}
         for i in range(len(content)):
             date_value_dict[content[i]['date']] = content[i]['value']
@@ -93,13 +96,14 @@ class StockApi():
                 self.cpi_store[curr_date] = date_value_dict[first_day_of_month]
             curr_date = self.increment_date(curr_date)
         
-    def make_cpi_request(self):
+    async def make_cpi_request(self):
         log.info("Fetching CPI information...")
         url = f"https://www.alphavantage.co/query?function=CPI&interval=monthly&apikey={self.api_key}"
         log.info(url)
-        response = requests.get(url)
-        content = response.json()['data']
-        return content
+        async with aiohttp.ClientSession() as session:
+            async with session.get(url) as response:
+                content = await response.json()
+                return content['data']
 
     ''' unemployment functions '''
     def get_unemployment_store(self):

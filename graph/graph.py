@@ -8,7 +8,7 @@ class Graph():
         log.info("Running Graph")
         self.config = config
     
-    def graph_scores_and_prediction(self, sentiment_store:dict, topic:str, prediction):
+    async def graph_scores_and_prediction(self, sentiment_store:dict, topic:str, prediction):
         log.info("Graphing sentiment store")
         fig, ax = plt.subplots(figsize=(10, 6))
     
@@ -22,8 +22,7 @@ class Graph():
         # Loop through the dictionary and append values to the lists
         for date in sorted(sentiment_store.keys()):
             values = sentiment_store[date]
-            print(date[4:])
-            dates.append(date[5:])
+            dates.append(date[10:])
             neg.append(self.add_scores(values, 'neg'))
             neu.append(self.add_scores(values, 'neu'))
             pos.append(self.add_scores(values, 'pos'))
@@ -45,7 +44,7 @@ class Graph():
         #plt.show()
         plt.savefig(f'{topic}.png')
 
-    def graph_scores(self, sentiment_store:dict, topic:str):
+    async def graph_scores(self, sentiment_store:dict, topic:str):
         log.info("Graphing sentiment store")
         fig, ax = plt.subplots(figsize=(10, 6))
     

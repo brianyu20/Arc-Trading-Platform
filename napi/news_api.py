@@ -4,6 +4,7 @@ import typing
 from datetime import datetime, timedelta
 import json
 import logging
+import asyncio
 
 log = logging.getLogger(__name__)
 
@@ -16,10 +17,10 @@ class NewsApi():
         self.apiKey = "b46a3358b0ea481c968794201c7e41e6"
         self.article_store:dict = {} # key = date; value = list of contents of articles from the key date
     
-    def get_article_store(self):
+    async def get_article_store(self):
         return self.article_store
     
-    def store_articles_free(self, n_articles:int, topic:str, start:str, end:str):
+    async def store_articles_free(self, n_articles:int, topic:str, start:str, end:str):
         url = (f'https://newsapi.org/v2/everything?q={topic}&from={start}&to={end}&sortBy=popularity&apiKey={self.apiKey}')
         print(url)
         log.info(f"Making get request to {url}")
@@ -37,7 +38,7 @@ class NewsApi():
             self.article_store[curr_date].append(content)
         log.info(f"Completed processing {topic} articles from {start} to {end}")
     
-    def store_articles(self, n_articles:int, topic:str, start:str, end:str):
+    async def store_articles(self, n_articles:int, topic:str, start:str, end:str):
         ''' 
         inclusive of start date, exclusive of end date
         Can fail if news api is on free developer mode and requests > 100 for the day
@@ -45,11 +46,11 @@ class NewsApi():
         
         curr_date = start
         while curr_date != end:
-            contents = self._make_request(n_articles=n_articles, topic=topic, date=curr_date)
+            contents = await self._make_request(n_articles=n_articles, topic=topic, date=curr_date)
             self.article_store[curr_date] = contents
             curr_date = self.increment_date(curr_date)
 
-    def _make_request(self, n_articles:int, topic:str, date:str):
+    async def _make_request(self, n_articles:int, topic:str, date:str):
         url = (f'https://newsapi.org/v2/everything?q={topic}&from={date}&sortBy=popularity&apiKey={self.apiKey}')
 
         response = requests.get(url)
