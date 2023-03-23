@@ -117,7 +117,7 @@ class ARC():
         for company_name in self.sp500:
             await self.generate_order(n_articles, company_name, self.sp500[company_name], start, end, first_iteration)
             first_iteration = False
-            await asyncio.sleep(15)
+            await asyncio.sleep(60)
 
 
     ############ arc functions ##############

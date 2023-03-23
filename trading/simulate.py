@@ -10,8 +10,8 @@ log = logging.getLogger(__name__)
 class TradeSimulator():
     def __init__(self, config):
         self.config = config
-        self.api_key = "PKWS1SIML3R0BIRXXAY9"
-        self.api_secret = "6Vd4GciP7HHb6ll7Teej74IuXuaLCBt3oV5iteia"
+        self.api_key = "PKR0B7JYZF07HCSKNCDM"
+        self.api_secret = "PaPmWSfioqiJO7oPRWNpXytY3uoHlMLqjHgAnE5Q"
         self.base_url = 'https://paper-api.alpaca.markets'
         #self.api = tradeapi.REST(self.api_key, self.api_secret, self.base_url, api_version='v2')
         self.client = TradingClient(self.api_key, self.api_secret, paper=True)
