@@ -24,7 +24,7 @@ class SentimentAnalysis():
             log.info(f"Computing sentiment scores for articles published on {date}")
             content_array = article_store[date]
             analyzed = await self._analyze_article_contents(content_array)
-            print(analyzed)
+            # print(analyzed)
             self.sentiment_store[date] = analyzed
         log.info("Completed sentiment score calculation and storage")
 

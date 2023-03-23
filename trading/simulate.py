@@ -42,8 +42,8 @@ class TradeSimulator():
                     qty=1,
                     side=OrderSide.BUY,
                     time_in_force=TimeInForce.DAY,
-                    stop_price=pred_high,
-                    limit_price=pred_low
+                    stop_price=str(pred_high),
+                    limit_price=str(pred_low)
                 )
                 self.submit_order(order)
             else:
@@ -54,8 +54,8 @@ class TradeSimulator():
                     qty=1,
                     side=OrderSide.BUY,
                     time_in_force=TimeInForce.DAY,
-                    stop_price=pred_close,
-                    limit_price=pred_low
+                    stop_price=str(pred_close),
+                    limit_price=str(pred_low)
                 )
                 self.submit_order(order) 
     
