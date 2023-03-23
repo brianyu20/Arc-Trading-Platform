@@ -29,14 +29,15 @@ class NewsApi():
             log.error(f"received status: {response.json()['status']}. Msg: {response.json()['message']}. Exiting")
             return
 
+        log.info(f"Processing articles pusblished for {topic}")
         contents_and_dates = self.extract_contents_and_date(response.json()['articles'], n_articles)
         for date, content in contents_and_dates:
             curr_date = datetime.strptime(date, '%Y-%m-%dT%H:%M:%SZ').strftime('%Y-%m-%d')
-            log.info(f"Processing articles pusblished on {curr_date}")
             if curr_date not in self.article_store:
                 self.article_store[curr_date] = []
             self.article_store[curr_date].append(content)
         log.info(f"Completed processing {topic} articles from {start} to {end}")
+        log.info("An article about %s: %s", topic, self.article_store[curr_date][0])
     
     async def store_articles(self, n_articles:int, topic:str, start:str, end:str):
         ''' 

@@ -25,9 +25,9 @@ class ARC():
             # 'Adobe': 'ADBE',
             # 'Advanced Micro Devices': 'AMD',
             # 'Amazon': 'AMZN',
-            # 'American Express': 'AXP',
-            # 'Apple': 'AAPL',
-            # 'Boeing': 'BA',
+            'American Express': 'AXP',
+            'Apple': 'AAPL',
+            'Boeing': 'BA',
             # 'Caterpillar': 'CAT',
             # 'Cisco': 'CSCO',
             # 'Citigroup': 'C',
@@ -58,18 +58,18 @@ class ARC():
             # 'Texas Instruments': 'TXN',
             # 'The Coca-Cola Company': 'KO',
             # 'The Home Depot': 'HD',
-            'The Procter & Gamble Company': 'PG',
-            'The Walt Disney Company': 'DIS',
-            'Travelers': 'TRV',
-            'UnitedHealth Group': 'UNH',
-            'Verizon': 'VZ',
-            'Visa': 'V',
-            'Walmart': 'WMT',
-            'Walt Disney': 'DIS',
-            'Wells Fargo': 'WFC',
-            'ExxonMobil': 'XOM',
-            'Johnson & Johnson': 'JNJ',
-            'Bristol-Myers Squibb': 'BMY'
+            # 'The Procter & Gamble Company': 'PG',
+            # 'The Walt Disney Company': 'DIS',
+            # 'Travelers': 'TRV',
+            # 'UnitedHealth Group': 'UNH',
+            # 'Verizon': 'VZ',
+            # 'Visa': 'V',
+            # 'Walmart': 'WMT',
+            # 'Walt Disney': 'DIS',
+            # 'Wells Fargo': 'WFC',
+            # 'ExxonMobil': 'XOM',
+            # 'Johnson & Johnson': 'JNJ',
+            # 'Bristol-Myers Squibb': 'BMY'
         }
 
     ############ Process functions ##############
@@ -117,7 +117,7 @@ class ARC():
         for company_name in self.sp500:
             await self.generate_order(n_articles, company_name, self.sp500[company_name], start, end, first_iteration)
             first_iteration = False
-            await asyncio.sleep(15)
+            await asyncio.sleep(3)
 
 
     ############ arc functions ##############
