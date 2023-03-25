@@ -34,6 +34,7 @@ class StockApi():
 
     async def get_and_store_stock(self, company_symbol:str, start:str, end:str):
         content = await self.make_request(company_symbol)
+        self.stock_store = {}
         for date in content:
             if self.is_date_before(start, date) and self.is_date_before(date, end):
                 # log.info(f"successfully fetched {date}. storing in stock_store: {content[date]}")

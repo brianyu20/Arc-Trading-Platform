@@ -20,6 +20,7 @@ class SentimentAnalysis():
         return self.sentiment_store
     
     async def analyze_and_store_scores(self, article_store:dict):
+        self.sentiment_store = {}
         for date in article_store:
             log.info(f"Computing sentiment scores for articles published on {date}")
             content_array = article_store[date]

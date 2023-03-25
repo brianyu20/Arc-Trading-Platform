@@ -31,7 +31,8 @@ async def main():
     #await arc.generate_order(-1, 'UBS', 'UBS', '2023-02-21', '2023-03-20')
 
 
-    await arc.generate_multiple_orders(-1, '2023-02-23', '2023-03-22')
+    await arc.generate_multiple_orders(-1, '2023-02-24', '2023-03-24')
+    #await arc.listen_order_status()
 
     # await arc.get_and_store_articles(30, 'Micsrosoft', '2023-02-13', '2023-03-12')
     # article_store = await arc.get_article_store()

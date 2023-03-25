@@ -29,6 +29,7 @@ class NewsApi():
             log.error(f"received status: {response.json()['status']}. Msg: {response.json()['message']}. Exiting")
             return
 
+        self.article_store = {}
         log.info(f"Processing articles pusblished for {topic}")
         contents_and_dates = self.extract_contents_and_date(response.json()['articles'], n_articles)
         for date, content in contents_and_dates:

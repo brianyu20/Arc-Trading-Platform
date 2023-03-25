@@ -113,12 +113,24 @@ class ARC():
         await self.simulator.create_order(predicted_value, previous_value, company_symbol)
     
     async def generate_multiple_orders(self, n_articles, start, end):
+        
         first_iteration = True
         for company_name in self.sp500:
             await self.generate_order(n_articles, company_name, self.sp500[company_name], start, end, first_iteration)
             first_iteration = False
             await asyncio.sleep(60)
+        await self.record_made_orders()
+        self.listen_order_status()
 
+    ############ simulate functions ##############
+    async def get_made_orders(self):
+        return await self.simulator.get_made_orders()
+    
+    async def record_made_orders(self):
+        await self.simulator.record_made_orders()
+    
+    async def listen_order_status(self):
+        self.simulator.connect()
 
     ############ arc functions ##############
     async def sync_sentiment_stock(self, sentiment_store:dict, stock_store:dict, start:str, end:str):
