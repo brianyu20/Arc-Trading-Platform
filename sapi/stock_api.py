@@ -4,6 +4,7 @@ import logging
 from datetime import datetime, timedelta
 import aiohttp
 import asyncio
+from utils.time import increment_date, first_day_of_month, month_before
 
 log = logging.getLogger(__name__)
 
@@ -61,13 +62,13 @@ class StockApi():
 
         curr_date = start
         while self.is_date_before(curr_date, end):
-            first_day_of_month = self.first_day_of_month(curr_date)
-            if first_day_of_month not in date_value_dict:
-                before = self.month_before(first_day_of_month)
-                self.interest_store[curr_date] = date_value_dict[self.month_before(first_day_of_month)]
+            first_day = first_day_of_month(curr_date)
+            if first_day not in date_value_dict:
+                before = month_before(first_day)
+                self.interest_store[curr_date] = date_value_dict[month_before(first_day)]
             else:
-                self.interest_store[curr_date] = date_value_dict[first_day_of_month]
-            curr_date = self.increment_date(curr_date)
+                self.interest_store[curr_date] = date_value_dict[first_day]
+            curr_date = increment_date(curr_date)
 
     async def make_interest_request(self) -> list:
         log.info("Fetching interests information...")
@@ -90,13 +91,13 @@ class StockApi():
        
         curr_date = start
         while self.is_date_before(curr_date, end):
-            first_day_of_month = self.first_day_of_month(curr_date)
-            if first_day_of_month not in date_value_dict:
-                before = self.month_before(first_day_of_month)
-                self.cpi_store[curr_date] = date_value_dict[self.month_before(first_day_of_month)]
+            first_day = first_day_of_month(curr_date)
+            if first_day not in date_value_dict:
+                before = month_before(first_day)
+                self.cpi_store[curr_date] = date_value_dict[month_before(first_day)]
             else:
-                self.cpi_store[curr_date] = date_value_dict[first_day_of_month]
-            curr_date = self.increment_date(curr_date)
+                self.cpi_store[curr_date] = date_value_dict[first_day]
+            curr_date = increment_date(curr_date)
         
     async def make_cpi_request(self):
         log.info("Fetching CPI information...")
@@ -131,27 +132,6 @@ class StockApi():
         response = requests.get(url)
         content = response.json()["annualReports"]
 
-    def first_day_of_month(self, date_string):
-        # Parse the input date string to a datetime object
-        date = datetime.strptime(date_string, "%Y-%m-%d")
-        
-        year = date.year
-        month = date.month
-        
-        first_day = datetime(year, month, 1)
-        
-        first_day_string = datetime.strftime(first_day, "%Y-%m-%d")
-        
-        return first_day_string
     
-    def increment_date(self, date_string):
-        date = datetime.strptime(date_string, '%Y-%m-%d')
-        incremented_date = date + timedelta(days=1)
-        return incremented_date.strftime('%Y-%m-%d')
     
-    def month_before(self, date_str):
-        date_obj = datetime.strptime(date_str, '%Y-%m-%d')
-        first_day_of_month = date_obj.replace(day=1)
-        last_month = first_day_of_month - timedelta(days=1)
-        first_day_of_prior_month = last_month.replace(day=1)
-        return first_day_of_prior_month.strftime('%Y-%m-%d')
+    

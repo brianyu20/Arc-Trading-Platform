@@ -1,10 +1,11 @@
 import aiohttp
 import requests
 import typing
-from datetime import datetime, timedelta
+from datetime import datetime
 import json
 import logging
 import asyncio
+from utils.time import increment_date
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ class NewsApi():
         while curr_date != end:
             contents = await self._make_request(n_articles=n_articles, topic=topic, date=curr_date)
             self.article_store[curr_date] = contents
-            curr_date = self.increment_date(curr_date)
+            curr_date = increment_date(curr_date)
 
     async def _make_request(self, n_articles:int, topic:str, date:str):
         url = (f'https://newsapi.org/v2/everything?q={topic}&from={date}&sortBy=popularity&apiKey={self.apiKey}')
@@ -84,8 +85,3 @@ class NewsApi():
     
     def extract_date(self, json:dict):
         return json['publishedAt']
-
-    def increment_date(self, date_string):
-        date = datetime.strptime(date_string, '%Y-%m-%d')
-        incremented_date = date + timedelta(days=1)
-        return incremented_date.strftime('%Y-%m-%d')

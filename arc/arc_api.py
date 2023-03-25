@@ -7,6 +7,8 @@ from graph import graph
 from nlp import sentiment_analysis
 from trading import simulate
 from ai import random_forest
+from utils.time import increment_date, is_date_before, day_before
+from utils.stock_dictionary import sp500_default, sp400_volatile_mid, sp500_volatile_big
 
 log = logging.getLogger(__name__)
 
@@ -20,57 +22,7 @@ class ARC():
         self.SAPI: stock_api = SAPI
         self.simulator:simulate = SIMULATOR
 
-        self.sp500 = {
-            '3M': 'MMM',
-            'Adobe': 'ADBE',
-            'Advanced Micro Devices': 'AMD',
-            'Amazon': 'AMZN',
-            'American Express': 'AXP',
-            'Apple': 'AAPL',
-            'Boeing': 'BA',
-            'Caterpillar': 'CAT',
-            'Cisco': 'CSCO',
-            'Citigroup': 'C',
-            'Coca-Cola': 'KO',
-            'Disney': 'DIS',
-            'DuPont': 'DD',
-            'Exxon Mobil': 'XOM',
-            'Meta': 'META',
-            'General Electric': 'GE',
-            'Goldman Sachs': 'GS',
-            'Home Depot': 'HD',
-            'IBM': 'IBM',
-            'Intel': 'INTC',
-            'Johnson & Johnson': 'JNJ',
-            'JPMorgan Chase': 'JPM',
-            'McDonalds': 'MCD',
-            'Merck': 'MRK',
-            'Microsoft': 'MSFT',
-            'Netflix': 'NFLX',
-            'Nike': 'NKE',
-            'Oracle': 'ORCL',
-            'PepsiCo': 'PEP',
-            'Pfizer': 'PFE',
-            'Procter & Gamble': 'PG',
-            'Qualcomm': 'QCOM',
-            'Salesforce': 'CRM',
-            'Tesla': 'TSLA',
-            'Texas Instruments': 'TXN',
-            'The Coca-Cola Company': 'KO',
-            'The Home Depot': 'HD',
-            'The Procter & Gamble Company': 'PG',
-            'The Walt Disney Company': 'DIS',
-            'Travelers': 'TRV',
-            'UnitedHealth Group': 'UNH',
-            'Verizon': 'VZ',
-            'Visa': 'V',
-            'Walmart': 'WMT',
-            'Walt Disney': 'DIS',
-            'Wells Fargo': 'WFC',
-            'ExxonMobil': 'XOM',
-            'Johnson & Johnson': 'JNJ',
-            'Bristol-Myers Squibb': 'BMY'
-        }
+        self.companies = sp400_volatile_mid
 
     ############ Process functions ##############
     async def generate_graph(self, n_articles, topic, start, end):
@@ -115,8 +67,8 @@ class ARC():
     async def generate_multiple_orders(self, n_articles, start, end):
         
         first_iteration = True
-        for company_name in self.sp500:
-            await self.generate_order(n_articles, company_name, self.sp500[company_name], start, end, first_iteration)
+        for company_name in self.companies:
+            await self.generate_order(n_articles, company_name, self.companies[company_name], start, end, first_iteration)
             first_iteration = False
             await asyncio.sleep(60)
         await self.record_made_orders()
@@ -135,11 +87,11 @@ class ARC():
     ############ arc functions ##############
     async def sync_sentiment_stock(self, sentiment_store:dict, stock_store:dict, start:str, end:str):
         curr_date = start
-        while self.is_date_before(curr_date, end):
+        while is_date_before(curr_date, end):
             if curr_date not in sentiment_store:
                 temp_date = curr_date
                 while temp_date not in sentiment_store and temp_date is not start:
-                    temp_date = self.day_before(temp_date)
+                    temp_date = day_before(temp_date)
                 if temp_date == start:
                     log.warning(f" temp_date iterating to find the last entry has just hit {start}")
                     sentiment_store[curr_date] = {'neg': 0.0, 'neu': 0.0, 'pos': 0.0, 'compound': 0.0}
@@ -147,9 +99,9 @@ class ARC():
             if curr_date not in stock_store:
                 temp_date = curr_date
                 while temp_date not in stock_store and temp_date is not start:
-                    temp_date = self.day_before(temp_date)
+                    temp_date = day_before(temp_date)
                 stock_store[curr_date] = stock_store[temp_date]
-            curr_date = self.increment_date(curr_date)
+            curr_date = increment_date(curr_date)
 
         log.info(f" length of sentiment score: {len(sentiment_store)}")
         log.info(f" length of stock store: {len(stock_store)}")
@@ -213,24 +165,7 @@ class ARC():
     async def get_and_store_cpi(self, start:str, end:str):
         return await self.SAPI.get_and_store_cpi(start, end)
     
-    ############ helper functions ##############
-    def increment_date(self, date_string):
-        date = datetime.strptime(date_string, '%Y-%m-%d')
-        incremented_date = date + timedelta(days=1)
-        return incremented_date.strftime('%Y-%m-%d')
-    
-    def is_date_before(self, date1_str, date2_str):
-        # Convert the date strings to datetime objects
-        date1 = datetime.strptime(date1_str, '%Y-%m-%d')
-        date2 = datetime.strptime(date2_str, '%Y-%m-%d')
 
-        # Check if date1 is before date2
-        return date1 <= date2
-    
-    def day_before(self, date_string):
-        date = datetime.strptime(date_string, '%Y-%m-%d')
-        day_before = date + timedelta(days=-1)
-        return day_before.strftime('%Y-%m-%d')
 
 
 
