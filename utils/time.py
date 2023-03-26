@@ -37,3 +37,9 @@ def month_before(date_str):
     last_month = first_day_of_month - timedelta(days=1)
     first_day_of_prior_month = last_month.replace(day=1)
     return first_day_of_prior_month.strftime('%Y-%m-%d')
+
+def get_earliest_and_latest_dates(date_dict):
+    dates = list(date_dict.keys())
+    earliest_date = min(dates)
+    latest_date = max(dates)
+    return (earliest_date, latest_date)

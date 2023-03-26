@@ -5,9 +5,15 @@ from datetime import datetime
 import json
 import logging
 import asyncio
+import os
 from utils.time import increment_date
 
 log = logging.getLogger(__name__)
+handler = logging.FileHandler('news_report.log')
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+log.addHandler(handler)
 
 class NewsApiError(Exception):
     pass
@@ -17,7 +23,9 @@ class NewsApi():
         log.info("Running NewsAPI")
         self.apiKey = "b46a3358b0ea481c968794201c7e41e6"
         self.article_store:dict = {} # key = date; value = list of contents of articles from the key date
-    
+        with open('news_report.log', 'w'):
+            pass
+        
     async def get_article_store(self):
         return self.article_store
     

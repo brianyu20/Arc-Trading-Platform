@@ -2,11 +2,18 @@ import matplotlib.pyplot as plt
 import logging
 
 log = logging.getLogger(__name__)
+handler = logging.FileHandler('graph_report.log')
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+log.addHandler(handler)
 
 class Graph():
     def __init__(self, config:dict):
         log.info("Running Graph")
         self.config = config
+        with open('graph_report.log', 'w'):
+            pass
     
     async def graph_scores_and_prediction(self, sentiment_store:dict, topic:str, prediction):
         log.info("Graphing sentiment store")

@@ -6,6 +6,11 @@ import json
 import asyncio
 
 log = logging.getLogger(__name__)
+handler = logging.FileHandler('sentiment_report.log')
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+log.addHandler(handler)
 
 class SentimentAnalysis():
     def __init__(self, config:dict):
@@ -14,6 +19,9 @@ class SentimentAnalysis():
         #nltk.download('vader_lexicon')
         self.analyzer = SentimentIntensityAnalyzer()
         self.sentiment_store = {} # key: date, value: array of sentiment scores from the date
+
+        with open('sentiment_report.log', 'w'):
+            pass
     
     async def get_sentiment_store(self):
         #json_sentiment_store = json.dumps(self.sentiment_store, indent=2)

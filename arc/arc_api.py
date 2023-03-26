@@ -1,5 +1,6 @@
 import logging
 import asyncio
+import os
 from datetime import datetime, timedelta
 from sapi import stock_api
 from napi import news_api
@@ -7,10 +8,16 @@ from graph import graph
 from nlp import sentiment_analysis
 from trading import simulate
 from ai import random_forest
-from utils.time import increment_date, is_date_before, day_before
+from utils.time import increment_date, is_date_before, day_before, get_earliest_and_latest_dates
 from utils.stock_dictionary import sp500_default, sp400_volatile_mid, sp500_volatile_big
 
 log = logging.getLogger(__name__)
+handler = logging.FileHandler('arc_report.log')
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+log.addHandler(handler)
+
 
 class ARC():
     def __init__(self, config:dict, SNT:sentiment_analysis, NAPI, G, RF, SAPI, SIMULATOR):
@@ -22,7 +29,10 @@ class ARC():
         self.SAPI: stock_api = SAPI
         self.simulator:simulate = SIMULATOR
 
-        self.companies = sp400_volatile_mid
+        self.companies = sp500_volatile_big
+        with open('arc_report.log', 'w'):
+            pass
+
 
     ############ Process functions ##############
     async def generate_graph(self, n_articles, topic, start, end):
@@ -37,12 +47,32 @@ class ARC():
     async def generate_next_stock(self, n_articles, topic, company_symbol, start, end, first_iteration:bool):
         await self.get_and_store_articles_free(n_articles, topic, start, end)
         article_store = await self.get_article_store()
+        article_earliest_date, article_latest_date = get_earliest_and_latest_dates(article_store)
+        log.info("Earliest article for %s on %s: %s", topic, article_earliest_date, article_store[article_earliest_date])
+        log.info("Latest article for %s on %s: %s", topic, article_latest_date, article_store[article_latest_date])
 
         await self.analyze_and_store_scores(article_store)
         sentiment_store = await self.get_sentiment_store()
+        sentiment_earliest_date, sentiment_latest_date = get_earliest_and_latest_dates(sentiment_store)
+        log.info("Processed sentiment scores for articles from %s to %s", sentiment_earliest_date, sentiment_latest_date)
 
         await self.get_and_store_stock(company_symbol, start, end)
         stock_store = await self.get_stock_store()
+        stock_earliest_date, stock_latest_date = get_earliest_and_latest_dates(stock_store)
+        log.info("Earliest stock prices: on %s, open: %s, hight: %s, low: %s, close: %s", 
+        stock_earliest_date, 
+        stock_store[stock_earliest_date]['1. open'],
+        stock_store[stock_earliest_date]['2. high'],
+        stock_store[stock_earliest_date]['3. low'],
+        stock_store[stock_earliest_date]['4. close'],
+        )
+        log.info("Latest stock prices: on %s, open: %s, hight: %s, low: %s, close: %s", 
+        stock_latest_date, 
+        stock_store[stock_latest_date]['1. open'],
+        stock_store[stock_latest_date]['2. high'],
+        stock_store[stock_latest_date]['3. low'],
+        stock_store[stock_latest_date]['4. close'],
+        )
 
         if first_iteration:
             await self.get_and_store_interest(start, end)

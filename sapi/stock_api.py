@@ -4,9 +4,15 @@ import logging
 from datetime import datetime, timedelta
 import aiohttp
 import asyncio
+import os
 from utils.time import increment_date, first_day_of_month, month_before
 
 log = logging.getLogger(__name__)
+handler = logging.FileHandler('stock_report.log')
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+log.addHandler(handler)
 
 class StockApi():
     def __init__(self, config:dict):
@@ -18,6 +24,8 @@ class StockApi():
         self.inflation_store = {}
         self.unemployment_store = {}
         self.company_store = {}
+        with open('stock_report.log', 'w'):
+            pass
 
     ''' stock functions '''
     async def get_stock_store(self):

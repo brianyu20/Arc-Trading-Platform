@@ -11,7 +11,6 @@ import asyncio
 
 logging.basicConfig(level=logging.INFO)
 
-
 async def main():
     config = {
         'nlp': {
@@ -26,12 +25,12 @@ async def main():
     SIMULATOR = TradeSimulator(config)
 
     arc = ARC(config, SNT, NAPI, G, RF, SAPI, SIMULATOR)
-    #await arc.generate_graph(-1, 'Credit Suisse', '2023-02-25', '2023-03-25')
-    await arc.generate_next_stock(-1, 'Walt Disney', 'DIS', '2023-02-27', '2023-03-24', True)
+    #await arc.generate_graph(-1, 'UBS', '2023-02-27', '2023-03-25')
+    await arc.generate_next_stock(-1, 'UBS', 'UBS', '2023-02-27', '2023-03-25', True)
     #await arc.generate_order(-1, 'UBS', 'UBS', '2023-02-21', '2023-03-20')
 
 
-    #await arc.generate_multiple_orders(-1, '2023-02-24', '2023-03-24')
+    #await arc.generate_multiple_orders(-1, '2023-02-27', '2023-03-25')
     #await arc.listen_order_status()
 
     # await arc.get_and_store_articles(30, 'Micsrosoft', '2023-02-13', '2023-03-12')

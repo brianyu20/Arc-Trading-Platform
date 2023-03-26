@@ -6,10 +6,17 @@ import logging
 import asyncio
 
 log = logging.getLogger(__name__)
+handler = logging.FileHandler('forest_report.log')
+handler.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+log.addHandler(handler)
 
 class RandomForest():
     def __init__(self, config:dict):
         self.config = config
+        with open('forest_report.log', 'w'):
+            pass
     
     async def predict_next_stock_value(self, data):
         log.info("Running model")
