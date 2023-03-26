@@ -29,7 +29,6 @@ async def main():
     await arc.generate_next_stock(-1, 'UBS', 'UBS', '2023-02-27', '2023-03-25', True)
     #await arc.generate_order(-1, 'UBS', 'UBS', '2023-02-21', '2023-03-20')
 
-
     #await arc.generate_multiple_orders(-1, '2023-02-27', '2023-03-25')
     #await arc.listen_order_status()
 
@@ -41,9 +40,6 @@ async def main():
     # stock_store = await arc.get_stock_store()
     # await arc.sync_sentiment_stock(sentiment_store, stock_store, '2023-02-13', '2023-03-12')
     
-
-
-
 async def run():
     await main()
 

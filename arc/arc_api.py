@@ -95,14 +95,13 @@ class ARC():
         await self.simulator.create_order(predicted_value, previous_value, company_symbol)
     
     async def generate_multiple_orders(self, n_articles, start, end):
-        
         first_iteration = True
         for company_name in self.companies:
             await self.generate_order(n_articles, company_name, self.companies[company_name], start, end, first_iteration)
             first_iteration = False
             await asyncio.sleep(60)
         await self.record_made_orders()
-        self.listen_order_status()
+        #self.listen_order_status()
 
     ############ simulate functions ##############
     async def get_made_orders(self):

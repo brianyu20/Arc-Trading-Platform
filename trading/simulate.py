@@ -75,6 +75,21 @@ class TradeSimulator():
             stop_price=stop_price,
         )
     
+    async def submit_trailing_sell_order(self, symbol, trail_percent):
+        current_price = await self.get_current_price(symbol)
+        trail_amount = current_price * trail_percent
+        stop_price = current_price - trail_amount
+        log.info("Submitting trailing stop sell order for %s, at current price %f, with stop price %f", symbol, current_price, stop_price)
+        await self.api.submit_order(
+            symbol=symbol,
+            qty=1,
+            side=OrderSide.SELL,
+            type='trailing_stop',
+            time_in_force= TimeInForce.DAY,
+            trail_percent=trail_percent,
+            trail_price=stop_price,
+        ) 
+
     async def submit_stop_buy_order(self, symbol, stop_price):
         log.info("Submitting stop buy order for %s, at price %f", symbol, stop_price)
         self.api.submit_order(
@@ -93,7 +108,8 @@ class TradeSimulator():
                 symbol = message['data']['order']['symbol']
                 if symbol in self.temp_made_orders and order_id not in self.processed_orders:
                     stop_price = self.temp_made_orders[symbol]
-                    await self.submit_stop_sell_order(symbol, stop_price)
+                    #await self.submit_stop_sell_order(symbol, stop_price)
+                    await self.submit_trailing_sell_order(symbol, 0.02)
                     self.processed_orders[order_id] = True
             else:
                 print(f"status change for {message['data']['order']['symbol']}, {message['data']['event']}")
@@ -127,6 +143,12 @@ class TradeSimulator():
                 log.warning("Create Condition Met: prev_close < pred_close and pred_close > pred_high.")
                 await self.submit_stop_buy_order(symbol, str(pred_close))
                 self.made_orders[symbol] = pred_close
+        else:
+            self.api.add_to_watchlist("Unordered Stocks", symbol)
+
+    async def get_current_price(self, symbol):
+        last_trade = await self.api.get_latest_trade(symbol)
+        return float(last_trade.price)
 
 ts = TradeSimulator({'key': 'value'})
 # for name in ts.temp_made_orders:
