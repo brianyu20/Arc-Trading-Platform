@@ -16,8 +16,8 @@ log.addHandler(handler)
 
 class StockApi():
     def __init__(self, config:dict):
-        self.config = config
-        self.api_key = "EG59IWIUZ1YFVP8L"
+        self.config = config['stock_api']
+        self.api_key = self.config['api_key']
         self.stock_store = {}
         self.interest_store = {}
         self.cpi_store = {}

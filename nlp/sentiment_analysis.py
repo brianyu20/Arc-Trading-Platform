@@ -15,7 +15,7 @@ log.addHandler(handler)
 class SentimentAnalysis():
     def __init__(self, config:dict):
         log.info("Running SentimentAnalysis")
-        self.config = config
+        self.config = config['sentiment_analysis']
         #nltk.download('vader_lexicon')
         self.analyzer = SentimentIntensityAnalyzer()
         self.sentiment_store = {} # key: date, value: array of sentiment scores from the date

@@ -11,7 +11,7 @@ log.addHandler(handler)
 class Graph():
     def __init__(self, config:dict):
         log.info("Running Graph")
-        self.config = config
+        self.config = config['graph']
         with open('graph_report.log', 'w'):
             pass
     

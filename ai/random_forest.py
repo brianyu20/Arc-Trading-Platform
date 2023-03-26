@@ -14,7 +14,9 @@ log.addHandler(handler)
 
 class RandomForest():
     def __init__(self, config:dict):
-        self.config = config
+        self.config = config['random_forest']
+        self.n_tree = self.config['n_tree']
+        self.n_random_state = self.config['n_random_state']
         with open('forest_report.log', 'w'):
             pass
     
@@ -26,7 +28,7 @@ class RandomForest():
         y = data[['next_open', 'next_high', 'next_low', 'next_close']]
 
         # Create a Random Forest model with 100 trees
-        rf = RandomForestRegressor(n_estimators=100, random_state=42)
+        rf = RandomForestRegressor(n_estimators=self.n_tree, random_state=self.n_random_state)
 
         # Fit the model to the training data
         rf.fit(X_sentiment.join(X_stock), y)

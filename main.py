@@ -5,6 +5,7 @@ from graph.graph import Graph
 from ai.random_forest import RandomForest
 from sapi.stock_api import StockApi
 from trading.simulate import TradeSimulator
+from utils.stock_dictionary import sp500_default, sp400_volatile_mid, sp500_volatile_big
 import json
 import logging
 import asyncio
@@ -13,12 +14,35 @@ logging.basicConfig(level=logging.INFO)
 
 async def main():
     config = {
-        'nlp': {
-            'field': 'N/A'
+        'arc':{
+            'companies': sp500_volatile_big
+        },
+        'sentiment_analysis': {
+            'enable': True,
+        },
+        'news_api':{
+            'api_key': "b46a3358b0ea481c968794201c7e41e6",
+        },
+        'graph': {
+            'enable': True,
+        },
+        'random_forest': {
+            'enable': True,
+            'n_tree': 100,
+            'n_random_state': 42,
+        },
+        'stock_api':{
+            'api_key': "EG59IWIUZ1YFVP8L",
+        },
+        'simulator': {
+            'api_key': "PK0PQWC9STA02VCBC3L0",
+            'api_secret': "6RhjGgxKLw178pB1DuwLVSRKzUBSTCIencq5N28p",
+            'base_url': 'https://paper-api.alpaca.markets',
         }
+
     }
     SNT = SentimentAnalysis(config)
-    NAPI = NewsApi()
+    NAPI = NewsApi(config)
     G = Graph(config)
     RF = RandomForest(config)
     SAPI = StockApi(config)
@@ -26,7 +50,7 @@ async def main():
 
     arc = ARC(config, SNT, NAPI, G, RF, SAPI, SIMULATOR)
     #await arc.generate_graph(-1, 'UBS', '2023-02-27', '2023-03-25')
-    await arc.generate_next_stock(-1, 'UBS', 'UBS', '2023-02-27', '2023-03-25', True)
+    await arc.generate_next_stock(-1, 'Microsoft', 'MSFT', '2023-02-27', '2023-03-26', True)
     #await arc.generate_order(-1, 'UBS', 'UBS', '2023-02-21', '2023-03-20')
 
     #await arc.generate_multiple_orders(-1, '2023-02-27', '2023-03-25')

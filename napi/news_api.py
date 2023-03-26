@@ -19,13 +19,14 @@ class NewsApiError(Exception):
     pass
 
 class NewsApi():
-    def __init__(self):
+    def __init__(self, config):
         log.info("Running NewsAPI")
-        self.apiKey = "b46a3358b0ea481c968794201c7e41e6"
+        self.config = config['news_api']
+        self.apiKey = self.config['api_key']
         self.article_store:dict = {} # key = date; value = list of contents of articles from the key date
         with open('news_report.log', 'w'):
             pass
-        
+
     async def get_article_store(self):
         return self.article_store
     

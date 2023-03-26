@@ -22,6 +22,7 @@ log.addHandler(handler)
 class ARC():
     def __init__(self, config:dict, SNT:sentiment_analysis, NAPI, G, RF, SAPI, SIMULATOR):
         log.info("Running ARC")
+        self.config = config['arc']
         self.SNT:sentiment_analysis = SNT
         self.NAPI:news_api = NAPI
         self.graph:graph = G
@@ -29,10 +30,9 @@ class ARC():
         self.SAPI: stock_api = SAPI
         self.simulator:simulate = SIMULATOR
 
-        self.companies = sp500_volatile_big
+        self.companies = self.config['companies']
         with open('arc_report.log', 'w'):
             pass
-
 
     ############ Process functions ##############
     async def generate_graph(self, n_articles, topic, start, end):

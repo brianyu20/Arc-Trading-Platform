@@ -19,11 +19,10 @@ log.addHandler(handler)
 
 class TradeSimulator():
     def __init__(self, config):
-        self.config = config
-        self.api_key = "PK0PQWC9STA02VCBC3L0"
-        self.api_secret = "6RhjGgxKLw178pB1DuwLVSRKzUBSTCIencq5N28p"
-        self.base_url = 'https://paper-api.alpaca.markets'
-        #self.api = tradeapi.REST(self.api_key, self.api_secret, self.base_url, api_version='v2')
+        self.config = config['simulator']
+        self.api_key = self.config['api_key']
+        self.api_secret = self.config['api_secret']
+        self.base_url = self.config['base_url']
         self.client = TradingClient(self.api_key, self.api_secret, paper=True)
         self.api = tradeapi.REST(self.api_key, self.api_secret, base_url=self.base_url, api_version='v2')
         self.conn = Stream(self.api_key, self.api_secret, base_url=self.base_url, raw_data=True)
@@ -150,7 +149,7 @@ class TradeSimulator():
         last_trade = await self.api.get_latest_trade(symbol)
         return float(last_trade.price)
 
-ts = TradeSimulator({'key': 'value'})
-# for name in ts.temp_made_orders:
-#     ts.submit_stop_orders(name, ts.temp_made_orders[name])
-ts.connect()
+# ts = TradeSimulator({'key': 'value'})
+# # for name in ts.temp_made_orders:
+# #     ts.submit_stop_orders(name, ts.temp_made_orders[name])
+# ts.connect()
