@@ -39,7 +39,8 @@ async def main():
             'api_secret': "6fqxWQewRGy3nG8lo1yLd9lBIhUHACpb6bIiD40Y",
             'base_url': 'https://paper-api.alpaca.markets',
             'quantity': 10,
-            'trail_percent': 0.4,
+            'trail_percent': 0.2, #alpaca needs a value > 0.1
+            'upper_percent': 0.04,
             'watchlist': {
                 'enable': False
             }
