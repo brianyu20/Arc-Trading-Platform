@@ -1,6 +1,7 @@
 import logging
 import asyncio
 import os
+import threading
 from datetime import datetime, timedelta
 from sapi import stock_api
 from napi import news_api
@@ -95,13 +96,16 @@ class ARC():
         await self.simulator.create_order(predicted_value, previous_value, company_symbol)
     
     async def generate_multiple_orders(self, n_articles, start, end):
+        websocket_thread = threading.Thread(target=self.listen_order_status)
+        websocket_thread.start()
         first_iteration = True
         for company_name in self.companies:
             await self.generate_order(n_articles, company_name, self.companies[company_name], start, end, first_iteration)
             first_iteration = False
             await asyncio.sleep(60)
         await self.record_made_orders()
-        #self.listen_order_status()
+        if websocket_thread.is_alive():
+            log.info("websocket running after completing all analysis")
 
     ############ simulate functions ##############
     async def get_made_orders(self):
@@ -110,7 +114,7 @@ class ARC():
     async def record_made_orders(self):
         await self.simulator.record_made_orders()
     
-    async def listen_order_status(self):
+    def listen_order_status(self):
         self.simulator.connect()
 
     ############ arc functions ##############

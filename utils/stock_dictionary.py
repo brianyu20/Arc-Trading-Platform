@@ -59,7 +59,7 @@ sp500_volatile_big = {
     "Microsoft": "MSFT",
     "Alphabet": "GOOGL",
     "Alibaba": "BABA",
-    "Berkshire Hathaway": "BRK-A",
+    #"Berkshire Hathaway": "BRK-A",
     "Johnson & Johnson": "JNJ",
     "JPMorgan Chase": "JPM",
     "Procter & Gamble": "PG",
