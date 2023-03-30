@@ -5,7 +5,7 @@ from graph.graph import Graph
 from ai.random_forest import RandomForest
 from sapi.stock_api import StockApi
 from trading.simulate import TradeSimulator
-from utils.stock_dictionary import sp500_default, sp400_volatile_mid, sp500_volatile_big
+from utils.stock_dictionary import sp500_default, sp400_volatile_mid, sp500_volatile_big, test
 import json
 import logging
 import asyncio
@@ -35,12 +35,12 @@ async def main():
             'api_key': "EG59IWIUZ1YFVP8L",
         },
         'simulator': {
-            'api_key': "PKZ3OZDN4STTT73XRENB",
-            'api_secret': "6fqxWQewRGy3nG8lo1yLd9lBIhUHACpb6bIiD40Y",
+            'api_key': "PKMKIRACIVYS8YLZHZY5",
+            'api_secret': "yxxAhr8NaG7fdicCNngQB3FR4zRkQe2qLfMsT1NB",
             'base_url': 'https://paper-api.alpaca.markets',
             'quantity': 10,
             'trail_percent': 0.2, #alpaca needs a value > 0.1
-            'upper_percent': 0.04,
+            'upper_percent': 0.005,
             'watchlist': {
                 'enable': False
             }
@@ -55,10 +55,10 @@ async def main():
 
     arc = ARC(config, SNT, NAPI, G, RF, SAPI, SIMULATOR)
     #await arc.generate_graph(-1, 'UBS', '2023-02-27', '2023-03-25')
-    #await arc.generate_next_stock(-1, 'Microsoft', 'MSFT', '2023-02-27', '2023-03-26', True)
+    #await arc.generate_next_stock(-1, 'UnitedHealth Group', 'UNH', '2023-03-02', '2023-03-29', True)
     #await arc.generate_order(-1, 'UBS', 'UBS', '2023-02-21', '2023-03-20')
 
-    await arc.generate_multiple_orders(-1, '2023-02-27', '2023-03-26')
+    await arc.generate_multiple_orders(-1, '2023-03-02', '2023-03-29')
     #await arc.listen_order_status()
 
     # await arc.get_and_store_articles(30, 'Micsrosoft', '2023-02-13', '2023-03-12')

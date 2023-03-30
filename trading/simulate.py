@@ -80,24 +80,24 @@ class TradeSimulator():
             # trail_price=stop_price,
         )
     
-    async def submit_limit_sell_order(self, symbol):
+    async def submit_limit_sell_order(self, symbol, quantity):
         current_price = await self.get_current_price(symbol)
         limit_price = str(round(current_price + (current_price*self.upper_percent), 2))
         log.info("Submitting limit stop sell order for %s, at current price %s, with limit price %s", symbol, current_price, limit_price)
         self.api.submit_order(
             symbol=symbol,
-            qty=self.quantity,
+            qty=quantity,
             side=OrderSide.SELL,
             type='limit',
             time_in_force= TimeInForce.DAY,
             limit_price=limit_price,
         )
 
-    async def submit_stop_buy_order(self, symbol, stop_price):
+    async def submit_stop_buy_order(self, symbol, quantity, stop_price):
         log.info("Submitting stop buy order for %s, at price %s", symbol, stop_price)
         self.api.submit_order(
             symbol=symbol,
-            qty=self.quantity,
+            qty=quantity,
             side=OrderSide.BUY,
             type='stop',
             time_in_force= TimeInForce.DAY,
@@ -106,13 +106,14 @@ class TradeSimulator():
 
     async def on_message(self, message):
         if message['stream'] == 'trade_updates':
-            if message['data']['event'] == 'fill':
+            if message['data']['event'] == 'fill' and message['data']['order']['side'] == 'buy':
                 order_id = message['data']['order']['id']
                 symbol = message['data']['order']['symbol']
-                if symbol in self.made_orders and order_id not in self.processed_orders:
+                #if symbol in self.made_orders and order_id not in self.processed_orders:
                     #await self.submit_trailing_sell_order(symbol, self.trail_percent)
-                    await self.submit_limit_sell_order(symbol)
-                    self.processed_orders[order_id] = True
+                quantity = message['data']['order']['qty']
+                await self.submit_limit_sell_order(symbol, quantity)
+                self.processed_orders[order_id] = True
             else:
                 print(f"status change for {message['data']['order']['symbol']}, {message['data']['event']}")
                 log.info("Status change for %s: %s", message['data']['order']['symbol'], message['data']['event'] )
@@ -138,24 +139,35 @@ class TradeSimulator():
 
     async def create_order(self, prediction, last_stock, symbol):
         log.info("Checking conditions for order for %s", symbol)
-        log.info("last stock information %s, %s, %s, %s", last_stock[0], last_stock[1], last_stock[1], last_stock[1])
+        log.info("last stock information %s, %s, %s, %s", last_stock[0], last_stock[1], last_stock[2], last_stock[3])
         pred_open = round(float(prediction[0]), 2)
         pred_high = round(float(prediction[1]), 2)
         pred_low = round(float(prediction[2]), 2)
         pred_close = round(float(prediction[3]), 2)
-        previous_open = round(float(last_stock[0]), 2)
-        previous_high = round(float(last_stock[1]), 2)
-        previous_low = round(float(last_stock[2]), 2)
-        previous_close = round(float(last_stock[3]), 2)
+        pred_close_float = float(prediction[3])
+
+        # previous_open = round(float(last_stock[0]), 2)
+        # previous_high = round(float(last_stock[1]), 2)
+        # previous_low = round(float(last_stock[2]), 2)
+        # previous_close = round(float(last_stock[3]), 2)
+        # previous_close_float = float(last_stock[3])
+        previous_open = float(last_stock[0])
+        previous_high = float(last_stock[1])
+        previous_low = float(last_stock[2])
+        previous_close = float(last_stock[3])
         if previous_close < pred_close:
-            if pred_close < pred_high:
-                log.warning("Create Condition Met: prev_close < pred_close and pred_close < pred_high.")
-                await self.submit_stop_buy_order(symbol, str(min(pred_low, pred_close)))
-                self.made_orders[symbol] = min(pred_low, pred_close)
-            else:
-                log.warning("Create Condition Met: prev_close < pred_close and pred_close > pred_high.")
-                await self.submit_stop_buy_order(symbol, str(min(pred_low, pred_close)))
-                self.made_orders[symbol] = min(pred_low, pred_close)
+            # if pred_close < pred_high:
+            #     log.warning("Create Condition Met: prev_close < pred_close and pred_close < pred_high.")
+            #     await self.submit_stop_buy_order(symbol, self.quantity, str(min(pred_low, pred_close)))
+            #     self.made_orders[symbol] = min(pred_low, pred_close)
+            # else:
+            #     log.warning("Create Condition Met: prev_close < pred_close and pred_close > pred_high.")
+            #     await self.submit_stop_buy_order(symbol, self.quantity, str(min(pred_low, pred_close)))
+            #     self.made_orders[symbol] = min(pred_low, pred_close)
+            difference = pred_close_float - previous_close
+            log.warning("Create condition met. pred_close - previous close = %f", difference)
+            quantity = str(round(difference*100))
+            await self.submit_stop_buy_order(symbol, quantity, str(min(pred_low, pred_close)))
         else:
             if self.config['watchlist']['enable']:
                 resp = self.api.add_to_watchlist(self.watchlist_id, symbol)
@@ -166,17 +178,17 @@ class TradeSimulator():
         return float(last_trade.price)
 
 # ts = TradeSimulator({
-#         'simulator': {
-#                 'api_key': "PKZ3OZDN4STTT73XRENB",
-#                 'api_secret': "6fqxWQewRGy3nG8lo1yLd9lBIhUHACpb6bIiD40Y",
-#                 'base_url': 'https://paper-api.alpaca.markets',
-#                 'quantity': 10,
-#                 'trail_percent': 0.4,
-#                 'upper_percent': 0.04,
-#                 'watchlist': {
-#                     'enable': False
-#                 }
+#             'simulator': {
+#             'api_key': "PK5ONDAX9U37O10X628S",
+#             'api_secret': "ctbgqoBqaJOVWCQPpwyANtqv6xXcGBst0pgwDZ8L",
+#             'base_url': 'https://paper-api.alpaca.markets',
+#             'quantity': 10,
+#             'trail_percent': 0.2, #alpaca needs a value > 0.1
+#             'upper_percent': 0.015,
+#             'watchlist': {
+#                 'enable': False
 #             }
+#         }
 #         })
 
 # watchlists = ts.api.get_watchlists()

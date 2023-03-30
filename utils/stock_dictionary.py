@@ -51,24 +51,24 @@ sp500_default = {
     }
 
 sp500_volatile_big = {
-    "Amazon": "AMZN",
-    "Apple": "AAPL",
-    "META": "META",
-    "Netflix": "NFLX",
-    "Tesla": "TSLA",
-    "Microsoft": "MSFT",
-    "Alphabet": "GOOGL",
-    "Alibaba": "BABA",
-    #"Berkshire Hathaway": "BRK-A",
-    "Johnson & Johnson": "JNJ",
-    "JPMorgan Chase": "JPM",
+    # #"Amazon.com": "AMZN",
+    # #"Apple Inc.": "AAPL",
+    # "META": "META",
+    # "Netflix": "NFLX",
+    # "Tesla": "TSLA",
+    # "Microsoft": "MSFT",
+    # "Google": "GOOGL",
+    # "Alibaba": "BABA",
+    # #"Berkshire Hathaway": "BRK-A",
+    # "Johnson & Johnson": "JNJ",
+    #"JPMorgan Chase": "JPM",
     "Procter & Gamble": "PG",
     "Mastercard": "MA",
-    "Visa": "V",
+    #"Visa": "V",
     "Walmart": "WMT",
     "Bank of America": "BAC",
     "AT&T": "T",
-    "Intel": "INTC",
+    #"Intel": "INTC",
     "Verizon Communications": "VZ",
     "Coca-Cola": "KO",
     "Pfizer": "PFE",
@@ -102,6 +102,9 @@ sp500_volatile_big = {
     "Marriott International": "MAR",
     "Las Vegas Sands": "LVS",
     "Wynn Resorts": "WYNN"
+}
+test = {
+    "UnitedHealth Group": "UNH",
 }
 
 sp400_volatile_mid = {
