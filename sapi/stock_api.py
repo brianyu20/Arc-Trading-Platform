@@ -73,7 +73,12 @@ class StockApi():
             first_day = first_day_of_month(curr_date)
             if first_day not in date_value_dict:
                 before = month_before(first_day)
-                self.interest_store[curr_date] = date_value_dict[month_before(first_day)]
+                # TODO: multiple months after the last published interest rate will not work
+                if before not in date_value_dict:
+                    before = month_before(before)
+                    self.interest_store[curr_date] = date_value_dict[before]
+                else:
+                    self.interest_store[curr_date] = date_value_dict[before]
             else:
                 self.interest_store[curr_date] = date_value_dict[first_day]
             curr_date = increment_date(curr_date)
@@ -102,7 +107,11 @@ class StockApi():
             first_day = first_day_of_month(curr_date)
             if first_day not in date_value_dict:
                 before = month_before(first_day)
-                self.cpi_store[curr_date] = date_value_dict[month_before(first_day)]
+                if before not in date_value_dict:
+                    before = month_before(before)
+                    self.cpi_store[curr_date] = date_value_dict[before]
+                else:
+                    self.cpi_store[curr_date] = date_value_dict[before]
             else:
                 self.cpi_store[curr_date] = date_value_dict[first_day]
             curr_date = increment_date(curr_date)
