@@ -155,7 +155,7 @@ class TradeSimulator():
         previous_high = float(last_stock[1])
         previous_low = float(last_stock[2])
         previous_close = float(last_stock[3])
-        if previous_close < pred_close:
+        if previous_close < pred_close_float:
             # if pred_close < pred_high:
             #     log.warning("Create Condition Met: prev_close < pred_close and pred_close < pred_high.")
             #     await self.submit_stop_buy_order(symbol, self.quantity, str(min(pred_low, pred_close)))
@@ -166,7 +166,7 @@ class TradeSimulator():
             #     self.made_orders[symbol] = min(pred_low, pred_close)
             difference = pred_close_float - previous_close
             log.warning("Create condition met. pred_close - previous close = %f", difference)
-            quantity = str(round(difference*100))
+            quantity = str(round(difference*10))
             await self.submit_stop_buy_order(symbol, quantity, str(min(pred_low, pred_close)))
         else:
             if self.config['watchlist']['enable']:
@@ -179,12 +179,12 @@ class TradeSimulator():
 
 # ts = TradeSimulator({
 #             'simulator': {
-#             'api_key': "PK5ONDAX9U37O10X628S",
-#             'api_secret': "ctbgqoBqaJOVWCQPpwyANtqv6xXcGBst0pgwDZ8L",
+#             'api_key': "PKKVFM7FSM21RZAUYSWE",
+#             'api_secret': "IvaTs2APLs0P2up5y7wHPobotJlRFcRhS5p6kZYp",
 #             'base_url': 'https://paper-api.alpaca.markets',
 #             'quantity': 10,
 #             'trail_percent': 0.2, #alpaca needs a value > 0.1
-#             'upper_percent': 0.015,
+#             'upper_percent': 0.007,
 #             'watchlist': {
 #                 'enable': False
 #             }
