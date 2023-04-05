@@ -165,10 +165,15 @@ class TradeSimulator():
             #     await self.submit_stop_buy_order(symbol, self.quantity, str(min(pred_low, pred_close)))
             #     self.made_orders[symbol] = min(pred_low, pred_close)
             difference = pred_close_float - previous_close
-            log.warning("Create condition met. pred_close - previous close = %f", difference)
-            quantity = str(round(difference*10))
-            await self.submit_stop_buy_order(symbol, quantity, str(min(pred_low, pred_close)))
+            if difference > 1 and difference < 5:
+                log.critical("Create condition met. pred_close - previous close = %f", difference)
+                quantity = str(round(difference*10))
+                await self.submit_stop_buy_order(symbol, quantity, str(min(pred_low, pred_close)))
+            else:
+                log.warning("Create condition failed at last check, difference: %f", difference)
         else:
+            difference = pred_close_float - previous_close
+            log.warning("NOT BOUGHT. pred_close(%f) - previous close(%f) = %f", pred_close_float, previous_close, difference)
             if self.config['watchlist']['enable']:
                 resp = self.api.add_to_watchlist(self.watchlist_id, symbol)
                 log.info("Added to watchlist: %s", symbol)
