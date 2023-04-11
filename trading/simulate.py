@@ -21,7 +21,9 @@ class TradeSimulator():
         self.base_url = self.config['base_url']
         self.quantity = self.config['quantity']
         self.trail_percent = self.config['trail_percent']
-        self.upper_percent = self.config['upper_percent']
+        self.upper_sell_percent = self.config['upper_sell_percent']
+        self.difference_lower = self.config['difference_condition']['lower_limit']
+        self.difference_upper = self.config['difference_condition']['upper_limit']
         self.api = tradeapi.REST(self.api_key, self.api_secret, base_url=self.base_url, api_version='v2')
         self.conn = Stream(self.api_key, self.api_secret, base_url=self.base_url, raw_data=True)
 
@@ -82,7 +84,7 @@ class TradeSimulator():
     
     async def submit_limit_sell_order(self, symbol, quantity):
         current_price = await self.get_current_price(symbol)
-        limit_price = str(round(current_price + (current_price*self.upper_percent), 2))
+        limit_price = str(round(current_price + (current_price*self.upper_sell_percent), 2))
         log.info("Submitting limit stop sell order for %s, at current price %s, with limit price %s", symbol, current_price, limit_price)
         self.api.submit_order(
             symbol=symbol,
@@ -165,7 +167,7 @@ class TradeSimulator():
             #     await self.submit_stop_buy_order(symbol, self.quantity, str(min(pred_low, pred_close)))
             #     self.made_orders[symbol] = min(pred_low, pred_close)
             difference = pred_close_float - previous_close
-            if difference > 1 and difference < 5:
+            if self.difference_condition(difference, previous_close):
                 log.critical("Create condition met. pred_close - previous close = %f", difference)
                 quantity = str(round(difference*10))
                 await self.submit_stop_buy_order(symbol, quantity, str(min(pred_low, pred_close)))
@@ -181,6 +183,20 @@ class TradeSimulator():
     async def get_current_price(self, symbol):
         last_trade = self.api.get_latest_trade(symbol)
         return float(last_trade.price)
+    
+    def difference_condition(self, difference, previous_close) -> bool:
+        if difference < 0:
+            return False
+        else:
+            lower_limit = previous_close*self.difference_lower
+            upper_limit = previous_close*self.difference_upper
+            log.info("lower_limit: %f", lower_limit)
+            log.info("upper_limit: %f", upper_limit)
+            if difference >= lower_limit and difference <= upper_limit:
+                return True
+            else:
+                return False
+
 
 # ts = TradeSimulator({
 #             'simulator': {
